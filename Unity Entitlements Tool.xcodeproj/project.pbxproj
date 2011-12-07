@@ -1,0 +1,376 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C7394D791483EA2D000BD730 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7394D781483EA2D000BD730 /* Cocoa.framework */; };
+		C7394D831483EA2D000BD730 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = C7394D811483EA2D000BD730 /* InfoPlist.strings */; };
+		C7394D851483EA2D000BD730 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C7394D841483EA2D000BD730 /* main.m */; };
+		C7394D891483EA2D000BD730 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = C7394D871483EA2D000BD730 /* Credits.rtf */; };
+		C7394D8C1483EA2D000BD730 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C7394D8B1483EA2D000BD730 /* AppDelegate.m */; };
+		C7394D8F1483EA2D000BD730 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7394D8D1483EA2D000BD730 /* MainMenu.xib */; };
+		C7736DB71488E8890077B0F9 /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C7736DB51488E8890077B0F9 /* MainViewController.m */; };
+		C7736DBD14890D2C0077B0F9 /* NSData+Helpers.m in Sources */ = {isa = PBXBuildFile; fileRef = C7736DBC14890D2C0077B0F9 /* NSData+Helpers.m */; };
+		C7736DC314892F3F0077B0F9 /* NSDictionary+Helpers.m in Sources */ = {isa = PBXBuildFile; fileRef = C7736DC214892F3F0077B0F9 /* NSDictionary+Helpers.m */; };
+		C7784451148D359A008EB24D /* Icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = C7784450148D359A008EB24D /* Icon.icns */; };
+		C7ABB2E6148A75B8005EEE26 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7ABB2E5148A75B8005EEE26 /* Security.framework */; };
+		C7D6FAD1148CD91200D80AEB /* NSView+Helpers.m in Sources */ = {isa = PBXBuildFile; fileRef = C7D6FAD0148CD91200D80AEB /* NSView+Helpers.m */; };
+		C7D6FADA148CFE1E00D80AEB /* grey-line-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = C7D6FAD9148CFE1E00D80AEB /* grey-line-icon.png */; };
+		C7F80DCC148E0FC8000992A5 /* ui-separator.png in Resources */ = {isa = PBXBuildFile; fileRef = C7F80DCB148E0FC8000992A5 /* ui-separator.png */; };
+		C7F80DCF148E21DB000992A5 /* MainViewController+Internal.m in Sources */ = {isa = PBXBuildFile; fileRef = C7F80DCE148E21DB000992A5 /* MainViewController+Internal.m */; };
+		C7FCF1A41488E0B400F64856 /* logo_unity.png in Resources */ = {isa = PBXBuildFile; fileRef = C7FCF1A31488E0B400F64856 /* logo_unity.png */; };
+		C7FCF1A71488E34E00F64856 /* green-check-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = C7FCF1A51488E34E00F64856 /* green-check-icon.png */; };
+		C7FCF1A81488E34E00F64856 /* red-cross-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = C7FCF1A61488E34E00F64856 /* red-cross-icon.png */; };
+		C7FCF1AA1488E4FE00F64856 /* black-gears-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = C7FCF1A91488E4FE00F64856 /* black-gears-icon.png */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		C7394D741483EA2C000BD730 /* Unity Entitlements Tool.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Unity Entitlements Tool.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C7394D781483EA2D000BD730 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		C7394D7B1483EA2D000BD730 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		C7394D7C1483EA2D000BD730 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		C7394D7D1483EA2D000BD730 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		C7394D801483EA2D000BD730 /* Unity Entitlements Tool-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Unity Entitlements Tool-Info.plist"; sourceTree = "<group>"; };
+		C7394D821483EA2D000BD730 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		C7394D841483EA2D000BD730 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		C7394D861483EA2D000BD730 /* Unity Entitlements Tool-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Unity Entitlements Tool-Prefix.pch"; sourceTree = "<group>"; };
+		C7394D881483EA2D000BD730 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
+		C7394D8A1483EA2D000BD730 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		C7394D8B1483EA2D000BD730 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		C7394D8E1483EA2D000BD730 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		C7736DB41488E8890077B0F9 /* MainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainViewController.h; sourceTree = "<group>"; };
+		C7736DB51488E8890077B0F9 /* MainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainViewController.m; sourceTree = "<group>"; };
+		C7736DBB14890D2C0077B0F9 /* NSData+Helpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Helpers.h"; sourceTree = "<group>"; };
+		C7736DBC14890D2C0077B0F9 /* NSData+Helpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Helpers.m"; sourceTree = "<group>"; };
+		C7736DC114892F3F0077B0F9 /* NSDictionary+Helpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+Helpers.h"; sourceTree = "<group>"; };
+		C7736DC214892F3F0077B0F9 /* NSDictionary+Helpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+Helpers.m"; sourceTree = "<group>"; };
+		C7784450148D359A008EB24D /* Icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Icon.icns; sourceTree = "<group>"; };
+		C7ABB2E5148A75B8005EEE26 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		C7D6FACF148CD91200D80AEB /* NSView+Helpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSView+Helpers.h"; sourceTree = "<group>"; };
+		C7D6FAD0148CD91200D80AEB /* NSView+Helpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSView+Helpers.m"; sourceTree = "<group>"; };
+		C7D6FAD9148CFE1E00D80AEB /* grey-line-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "grey-line-icon.png"; sourceTree = "<group>"; };
+		C7F80DCB148E0FC8000992A5 /* ui-separator.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ui-separator.png"; sourceTree = "<group>"; };
+		C7F80DCE148E21DB000992A5 /* MainViewController+Internal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MainViewController+Internal.m"; sourceTree = "<group>"; };
+		C7FCF1A31488E0B400F64856 /* logo_unity.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_unity.png; sourceTree = "<group>"; };
+		C7FCF1A51488E34E00F64856 /* green-check-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "green-check-icon.png"; sourceTree = "<group>"; };
+		C7FCF1A61488E34E00F64856 /* red-cross-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "red-cross-icon.png"; sourceTree = "<group>"; };
+		C7FCF1A91488E4FE00F64856 /* black-gears-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "black-gears-icon.png"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C7394D711483EA2C000BD730 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C7ABB2E6148A75B8005EEE26 /* Security.framework in Frameworks */,
+				C7394D791483EA2D000BD730 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		C7394D691483EA2C000BD730 = {
+			isa = PBXGroup;
+			children = (
+				C7394D7E1483EA2D000BD730 /* Unity Entitlements Tool */,
+				C7394D771483EA2D000BD730 /* Frameworks */,
+				C7394D751483EA2C000BD730 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C7394D751483EA2C000BD730 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C7394D741483EA2C000BD730 /* Unity Entitlements Tool.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C7394D771483EA2D000BD730 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C7ABB2E5148A75B8005EEE26 /* Security.framework */,
+				C7394D781483EA2D000BD730 /* Cocoa.framework */,
+				C7394D7A1483EA2D000BD730 /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		C7394D7A1483EA2D000BD730 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C7394D7B1483EA2D000BD730 /* AppKit.framework */,
+				C7394D7C1483EA2D000BD730 /* CoreData.framework */,
+				C7394D7D1483EA2D000BD730 /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		C7394D7E1483EA2D000BD730 /* Unity Entitlements Tool */ = {
+			isa = PBXGroup;
+			children = (
+				C7736DBA14890BD40077B0F9 /* Helpers */,
+				C7FCF1A11488E0A000F64856 /* Resources */,
+				C7394D8A1483EA2D000BD730 /* AppDelegate.h */,
+				C7394D8B1483EA2D000BD730 /* AppDelegate.m */,
+				C7736DB41488E8890077B0F9 /* MainViewController.h */,
+				C7736DB51488E8890077B0F9 /* MainViewController.m */,
+				C7F80DCE148E21DB000992A5 /* MainViewController+Internal.m */,
+				C7394D8D1483EA2D000BD730 /* MainMenu.xib */,
+				C7394D7F1483EA2D000BD730 /* Supporting Files */,
+			);
+			path = "Unity Entitlements Tool";
+			sourceTree = "<group>";
+		};
+		C7394D7F1483EA2D000BD730 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				C7394D801483EA2D000BD730 /* Unity Entitlements Tool-Info.plist */,
+				C7394D811483EA2D000BD730 /* InfoPlist.strings */,
+				C7394D841483EA2D000BD730 /* main.m */,
+				C7394D861483EA2D000BD730 /* Unity Entitlements Tool-Prefix.pch */,
+				C7394D871483EA2D000BD730 /* Credits.rtf */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		C7736DBA14890BD40077B0F9 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				C7736DBB14890D2C0077B0F9 /* NSData+Helpers.h */,
+				C7736DBC14890D2C0077B0F9 /* NSData+Helpers.m */,
+				C7736DC114892F3F0077B0F9 /* NSDictionary+Helpers.h */,
+				C7736DC214892F3F0077B0F9 /* NSDictionary+Helpers.m */,
+				C7D6FACF148CD91200D80AEB /* NSView+Helpers.h */,
+				C7D6FAD0148CD91200D80AEB /* NSView+Helpers.m */,
+			);
+			name = Helpers;
+			sourceTree = "<group>";
+		};
+		C7FCF1A11488E0A000F64856 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				C7784450148D359A008EB24D /* Icon.icns */,
+				C7FCF1A91488E4FE00F64856 /* black-gears-icon.png */,
+				C7FCF1A51488E34E00F64856 /* green-check-icon.png */,
+				C7FCF1A61488E34E00F64856 /* red-cross-icon.png */,
+				C7D6FAD9148CFE1E00D80AEB /* grey-line-icon.png */,
+				C7F80DCB148E0FC8000992A5 /* ui-separator.png */,
+				C7FCF1A31488E0B400F64856 /* logo_unity.png */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C7394D731483EA2C000BD730 /* Unity Entitlements Tool */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C7394D921483EA2D000BD730 /* Build configuration list for PBXNativeTarget "Unity Entitlements Tool" */;
+			buildPhases = (
+				C7394D701483EA2C000BD730 /* Sources */,
+				C7394D711483EA2C000BD730 /* Frameworks */,
+				C7394D721483EA2C000BD730 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Unity Entitlements Tool";
+			productName = "Unity Entitlements Tool";
+			productReference = C7394D741483EA2C000BD730 /* Unity Entitlements Tool.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C7394D6B1483EA2C000BD730 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+			};
+			buildConfigurationList = C7394D6E1483EA2C000BD730 /* Build configuration list for PBXProject "Unity Entitlements Tool" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = C7394D691483EA2C000BD730;
+			productRefGroup = C7394D751483EA2C000BD730 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C7394D731483EA2C000BD730 /* Unity Entitlements Tool */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C7394D721483EA2C000BD730 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C7394D831483EA2D000BD730 /* InfoPlist.strings in Resources */,
+				C7394D891483EA2D000BD730 /* Credits.rtf in Resources */,
+				C7394D8F1483EA2D000BD730 /* MainMenu.xib in Resources */,
+				C7FCF1A41488E0B400F64856 /* logo_unity.png in Resources */,
+				C7FCF1A71488E34E00F64856 /* green-check-icon.png in Resources */,
+				C7FCF1A81488E34E00F64856 /* red-cross-icon.png in Resources */,
+				C7FCF1AA1488E4FE00F64856 /* black-gears-icon.png in Resources */,
+				C7D6FADA148CFE1E00D80AEB /* grey-line-icon.png in Resources */,
+				C7784451148D359A008EB24D /* Icon.icns in Resources */,
+				C7F80DCC148E0FC8000992A5 /* ui-separator.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C7394D701483EA2C000BD730 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C7394D851483EA2D000BD730 /* main.m in Sources */,
+				C7394D8C1483EA2D000BD730 /* AppDelegate.m in Sources */,
+				C7736DB71488E8890077B0F9 /* MainViewController.m in Sources */,
+				C7736DBD14890D2C0077B0F9 /* NSData+Helpers.m in Sources */,
+				C7736DC314892F3F0077B0F9 /* NSDictionary+Helpers.m in Sources */,
+				C7D6FAD1148CD91200D80AEB /* NSView+Helpers.m in Sources */,
+				C7F80DCF148E21DB000992A5 /* MainViewController+Internal.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		C7394D811483EA2D000BD730 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C7394D821483EA2D000BD730 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		C7394D871483EA2D000BD730 /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C7394D881483EA2D000BD730 /* en */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+		C7394D8D1483EA2D000BD730 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C7394D8E1483EA2D000BD730 /* en */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		C7394D901483EA2D000BD730 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		C7394D911483EA2D000BD730 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		C7394D931483EA2D000BD730 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Unity Entitlements Tool/Unity Entitlements Tool-Prefix.pch";
+				INFOPLIST_FILE = "Unity Entitlements Tool/Unity Entitlements Tool-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "C06CFCE0-4A58-4E9F-B0AA-15E76506CD84";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		C7394D941483EA2D000BD730 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Unity Entitlements Tool/Unity Entitlements Tool-Prefix.pch";
+				INFOPLIST_FILE = "Unity Entitlements Tool/Unity Entitlements Tool-Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "C06CFCE0-4A58-4E9F-B0AA-15E76506CD84";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C7394D6E1483EA2C000BD730 /* Build configuration list for PBXProject "Unity Entitlements Tool" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C7394D901483EA2D000BD730 /* Debug */,
+				C7394D911483EA2D000BD730 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C7394D921483EA2D000BD730 /* Build configuration list for PBXNativeTarget "Unity Entitlements Tool" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C7394D931483EA2D000BD730 /* Debug */,
+				C7394D941483EA2D000BD730 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C7394D6B1483EA2C000BD730 /* Project object */;
+}

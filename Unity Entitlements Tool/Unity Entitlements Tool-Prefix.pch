@@ -1,0 +1,7 @@
+//
+// Prefix header for all source files of the 'Unity Entitlements Tool' target in the 'Unity Entitlements Tool' project
+//
+
+#ifdef __OBJC__
+    #import <Cocoa/Cocoa.h>
+#endif
