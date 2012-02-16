@@ -29,14 +29,22 @@
 #import <Cocoa/Cocoa.h>
 
 @interface MainViewController : NSViewController <NSOpenSavePanelDelegate> {
+    NSArray *macAppStoreCategories;
+    NSArray *macAppStoreCategoriesFullNames;
+    
     NSURL *projectURL;
     NSURL *postProcessScriptURL;
     NSURL *entitlementsURL;
     
-    NSString *provisioningProfile;
+    NSString *bundleIdentifier;
+    NSString *applicationCategory;
+    NSString *provisioningCertificate;
+    NSString *provisioningProfilePath;
     NSMutableDictionary *entitlements;
     BOOL postProcessScriptHasCodesign;
+    BOOL postProcessScriptHasPackaging;
     
+    NSMutableArray *provisioningProfilePaths;
     NSMutableArray *provisioningProfileNames;
     NSMutableArray *provisioningProfileAppIds;
     NSMutableArray *provisioningProfileCertificates;
@@ -54,6 +62,7 @@
 @property (unsafe_unretained) IBOutlet NSImageView *codeSignIconImageView;
 @property (unsafe_unretained) IBOutlet NSImageView *entitlementsIconImageView;
 @property (unsafe_unretained) IBOutlet NSImageView *sandboxingIconImageView;
+@property (unsafe_unretained) IBOutlet NSImageView *packagingIconImageView;
 
 // Buttons
 @property (unsafe_unretained) IBOutlet NSButton *pickProjectDirectoryButton;
@@ -64,6 +73,7 @@
 - (IBAction)pickProjectDirectoryPressed:(id)sender;
 - (IBAction)updateBuildPipelinePressed:(id)sender;
 - (IBAction)clearBuildPipelinePressed:(id)sender;
+
 
 ////////////////////
 // CODESIGN ITEMS //
@@ -77,13 +87,20 @@
 
 // Buttons
 @property (unsafe_unretained) IBOutlet NSPopUpButton *provisioningProfilePopUpButton;
+@property (unsafe_unretained) IBOutlet NSPopUpButton *macAppStoreCategoryPopUpButton;
 
 // Checkboxes
 @property (unsafe_unretained) IBOutlet NSButton *codeSignCheckbox;
 
+// Text fields
+@property (unsafe_unretained) IBOutlet NSTextField *bundleIdentifierTextField;
+
 // Actions
 - (IBAction)codeSignCheckboxPressed:(id)sender;
 - (IBAction)provisioningProfilePicked:(id)sender;
+- (IBAction)bundleIdentifierTextFieldEdited:(id)sender;
+- (IBAction)appStoreCategoryPicked:(id)sender;
+
 
 ////////////////////////
 // ENTITLEMENTS ITEMS //
@@ -136,6 +153,19 @@
 - (IBAction)sandboxingOptionCheckboxPressed:(id)sender;
 
 
+/////////////////////
+// PACKAGING ITEMS //
+/////////////////////
+
+@property (unsafe_unretained) IBOutlet NSBox *packagingBox;
+
+// Checkboxes
+@property (unsafe_unretained) IBOutlet NSButton *packagingCheckbox;
+
+// Actions
+- (IBAction)packagingCheckboxPressed:(id)sender;
+
+
 @end
 
 
@@ -158,8 +188,10 @@
 - (void)setEntitlementsBoxInactive;
 - (void)setSandboxingBoxActive;
 - (void)setSandboxingBoxInactive;
+- (void)setPackagingBoxActive;
+- (void)setPackagingBoxInactive;
 
-- (void)updatePostProcessScript:(NSMutableString *)script codesign:(BOOL)withCodesign entitlements:(BOOL)withEntitlements;
+- (void)updatePostProcessScript:(NSMutableString *)script codesign:(BOOL)withCodesign entitlements:(BOOL)withEntitlements packaging:(BOOL)withPackaging;
 
 
 @end

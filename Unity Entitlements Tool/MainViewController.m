@@ -36,13 +36,114 @@
 
 @implementation MainViewController
 
-@synthesize projectNameLabel, projectIconImageView, codeSignIconImageView, entitlementsIconImageView, sandboxingIconImageView, pickProjectDirectoryButton, updateBuildPipelineButton, clearBuildPipelineButton;
+@synthesize projectNameLabel, projectIconImageView, codeSignIconImageView, entitlementsIconImageView, sandboxingIconImageView, packagingIconImageView, pickProjectDirectoryButton, updateBuildPipelineButton, clearBuildPipelineButton;
 
-@synthesize codeSignBox, provisioningProfileAppIdLabel, provisioningProfileCertificateLabel, provisioningProfilePopUpButton, codeSignCheckbox;
+@synthesize codeSignBox, provisioningProfileAppIdLabel, provisioningProfileCertificateLabel, provisioningProfilePopUpButton, codeSignCheckbox, bundleIdentifierTextField, macAppStoreCategoryPopUpButton;
 
 @synthesize entitlementsBox, entitlementsCheckbox, iCloudContainerTextField, iCloudKeyValueStoreTextField;
 
 @synthesize sandboxingBox, sandboxingCheckbox, sbAllowDownloadsFolderAccessCheckbox, sbAllowIncomingNetworkConnectionsCheckbox, sbAllowOutgoingNetworkConnectionsCheckbox, sbAllowCameraAccessCheckbox, sbAllowMicrophoneAccessCheckbox, sbAllowUSBAccessCheckbox, sbAllowPrintingCheckbox, sbAllowAddressBookDataAccessCheckbox, sbAllowLocationServicesAccessCheckbox, sbAllowCalendarDataAccessCheckbox, sbFileSystemAccessPopUpButton, sbMusicFolderAccessPopUpButton, sbMoviesFolderAccessPopUpButton, sbPicturesFolderAccesPopUpButton;
+
+@synthesize packagingBox, packagingCheckbox;
+
+
+////////////////////
+// Initialization //
+////////////////////
+
+#pragma mark Initialization
+
+- (id)initWithCoder:(NSCoder *)aDecoder {
+    if ((self = [super initWithCoder:aDecoder])) {
+        macAppStoreCategories = [NSArray arrayWithObjects:
+                                 @"public.app-category.business",
+                                 @"public.app-category.developer-tools",
+                                 @"public.app-category.education",
+                                 @"public.app-category.entertainment",
+                                 @"public.app-category.finance",
+                                 @"public.app-category.games",
+                                 @"public.app-category.action-games",
+                                 @"public.app-category.adventure-games",
+                                 @"public.app-category.arcade-games",
+                                 @"public.app-category.board-games",
+                                 @"public.app-category.card-games",
+                                 @"public.app-category.casino-games",
+                                 @"public.app-category.dice-games",
+                                 @"public.app-category.educational-games",
+                                 @"public.app-category.family-games",
+                                 @"public.app-category.kids-games",
+                                 @"public.app-category.music-games",
+                                 @"public.app-category.puzzle-games",
+                                 @"public.app-category.racing-games",
+                                 @"public.app-category.role-playing-games",
+                                 @"public.app-category.simulation-games",
+                                 @"public.app-category.sports-games",
+                                 @"public.app-category.strategy-games",
+                                 @"public.app-category.trivia-games",
+                                 @"public.app-category.word-games",
+                                 @"public.app-category.graphics-design",
+                                 @"public.app-category.healthcare-fitness",
+                                 @"public.app-category.lifestyle",
+                                 @"public.app-category.medical",
+                                 @"public.app-category.music",
+                                 @"public.app-category.news",
+                                 @"public.app-category.photography",
+                                 @"public.app-category.productivity",
+                                 @"public.app-category.reference",
+                                 @"public.app-category.social-networking",
+                                 @"public.app-category.sports",
+                                 @"public.app-category.travel",
+                                 @"public.app-category.utilities",
+                                 @"public.app-category.video",
+                                 @"public.app-category.weather",
+                                 nil];
+        
+        macAppStoreCategoriesFullNames = [NSArray arrayWithObjects:
+                                          @"Business",
+                                          @"Developer Tools",
+                                          @"Education",
+                                          @"Entertainment",
+                                          @"Finance",
+                                          @"Games",
+                                          @"Games - Action",
+                                          @"Games - Adventure",
+                                          @"Games - Arcade",
+                                          @"Games - Board",
+                                          @"Games - Card",
+                                          @"Games - Casino",
+                                          @"Games - Dice",
+                                          @"Games - Educational",
+                                          @"Games - Family",
+                                          @"Games - Kids",
+                                          @"Games - Music",
+                                          @"Games - Puzzle",
+                                          @"Games - Racing",
+                                          @"Games - Role Playing",
+                                          @"Games - Simulation",
+                                          @"Games - Sports",
+                                          @"Games - Strategy",
+                                          @"Games - Trivia",
+                                          @"Games - Word",
+                                          @"Graphics, Design",
+                                          @"Healthcare, Fitness",
+                                          @"Lifestyle",
+                                          @"Medical",
+                                          @"Music",
+                                          @"News",
+                                          @"Photography",
+                                          @"Productivity",
+                                          @"Reference",
+                                          @"Social Networking",
+                                          @"Sports",
+                                          @"Travel",
+                                          @"Utilities",
+                                          @"Video",
+                                          @"Weather",
+                                          nil];        
+    }
+    
+    return self;
+}
 
 
 ///////////////////////////
@@ -109,8 +210,22 @@
         return;
     
     // Force update text-fields -- if we're still in the text field, update message is not sent so just force update it
+    [self bundleIdentifierTextFieldEdited:self.bundleIdentifierTextField];
     [self iCloudKeyValueStoreTextFieldEdited:self.iCloudKeyValueStoreTextField];
     [self iCloudContainerTextFieldEdited:self.iCloudContainerTextField];
+    
+    // Check bundle identifer
+    if ([bundleIdentifier rangeOfString:@"*"].location != NSNotFound) {
+        // Alert and stop
+        NSAlert *alert = [NSAlert alertWithMessageText:@"Invalid Bundle Identifier" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"Bundle Identifier should not contain wildcard '*' character. Bundle Identifier should be in the form of com.company.name with a pattern matching the one of your provisioning profile."];
+        [alert runModal];        
+        return;
+    } else if ([bundleIdentifier isEqualToString:@""]) {
+        // Alert and stop
+        NSAlert *alert = [NSAlert alertWithMessageText:@"Invalid Bundle Identifier" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"Bundle Identifier should not be empty. Bundle Identifier should be in the form of com.company.name with a pattern matching the one of your provisioning profile."];
+        [alert runModal];        
+        return;
+    }
     
     // Check for wildcard in iCloud identifiers
     if (([[entitlements objectForKey:@"com.apple.developer.ubiquity-kvstore-identifier"] rangeOfString:@"*"].location != NSNotFound)
@@ -126,7 +241,7 @@
     NSMutableString *postProcessScript = [NSMutableString stringWithContentsOfURL:postProcessScriptURL encoding:NSUTF8StringEncoding error:&readError];
         
     // Update script to with new settings
-    [self updatePostProcessScript:postProcessScript codesign:(self.codeSignCheckbox.state == NSOnState) entitlements:(self.entitlementsCheckbox.state == NSOnState)];
+    [self updatePostProcessScript:postProcessScript codesign:(self.codeSignCheckbox.state == NSOnState) entitlements:(self.entitlementsCheckbox.state == NSOnState) packaging:(self.packagingCheckbox.state == NSOnState)];
 
     // Save post-process script
     NSError *writeError = nil;
@@ -149,7 +264,7 @@
     NSMutableString *postProcessScript = [NSMutableString stringWithContentsOfURL:postProcessScriptURL encoding:NSUTF8StringEncoding error:&readError];
     
     // Update script to clear pipeline
-    [self updatePostProcessScript:postProcessScript codesign:NO entitlements:NO];
+    [self updatePostProcessScript:postProcessScript codesign:NO entitlements:NO packaging:NO];
     
     // Save post-process script
     NSError *writeError = nil;
@@ -176,21 +291,62 @@
 #pragma mark Codesign Actions
 
 - (IBAction)codeSignCheckboxPressed:(id)sender {
-    if (self.codeSignCheckbox.state)
+    if (self.codeSignCheckbox.state) {
         [self setEntitlementsBoxActive];
-    else
+        [self setPackagingBoxActive];
+    } else {
         [self setEntitlementsBoxInactive];
+        [self setPackagingBoxInactive];
+    }
 }
 
 - (IBAction)provisioningProfilePicked:(id)sender {
     // Set the provisioning profile using the certificate name
-    provisioningProfile = [provisioningProfileCertificates objectAtIndex:self.provisioningProfilePopUpButton.indexOfSelectedItem];
+    provisioningCertificate = [provisioningProfileCertificates objectAtIndex:self.provisioningProfilePopUpButton.indexOfSelectedItem];
+    provisioningProfilePath = [provisioningProfilePaths objectAtIndex:self.provisioningProfilePopUpButton.indexOfSelectedItem];
+    
+    // Update bundle identifier
+    NSString *appId = [provisioningProfileAppIds objectAtIndex:self.provisioningProfilePopUpButton.indexOfSelectedItem];
+    NSRange appIdFirstPart = [appId rangeOfString:@"."];
+    if (appIdFirstPart.location != NSNotFound) {
+        NSString *strippedAppId = [appId substringFromIndex:(appIdFirstPart.location + appIdFirstPart.length)];
+        bundleIdentifier = [strippedAppId stringByReplacingOccurrencesOfString:@"*" withString:@""];
+    } else {
+        bundleIdentifier = @"";
+    }
+    [self.bundleIdentifierTextField setStringValue:bundleIdentifier];
+    
+    // Update AppID & cert name
+    [self.provisioningProfileAppIdLabel setStringValue:appId];
+    [self.provisioningProfileCertificateLabel setStringValue:[provisioningProfileCertificates objectAtIndex:self.provisioningProfilePopUpButton.indexOfSelectedItem]];
     
     // Update iCloud key-value store text field
     [self.iCloudKeyValueStoreTextField setStringValue:[provisioningProfileAppIds objectAtIndex:self.provisioningProfilePopUpButton.indexOfSelectedItem]];
 
     // Update iCloud container text field
     [self.iCloudContainerTextField setStringValue:[provisioningProfileAppIds objectAtIndex:self.provisioningProfilePopUpButton.indexOfSelectedItem]];
+    
+    // Update entitlements immediately
+    [entitlements setObject:[self.iCloudKeyValueStoreTextField stringValue] forKey:@"com.apple.application-identifier"];
+    [entitlements setObject:[self.iCloudKeyValueStoreTextField stringValue] forKey:@"com.apple.developer.ubiquity-kvstore-identifier"];
+    [entitlements setObject:[NSArray arrayWithObject:[self.iCloudContainerTextField stringValue]] forKey:@"com.apple.developer.ubiquity-container-identifiers"];
+}
+
+- (IBAction)bundleIdentifierTextFieldEdited:(id)sender {
+    // Update bundle identifier
+    bundleIdentifier = [self.bundleIdentifierTextField stringValue];
+}
+
+- (IBAction)appStoreCategoryPicked:(id)sender {
+    // Update app store category
+    NSInteger index = self.macAppStoreCategoryPopUpButton.indexOfSelectedItem;
+    
+    if (index < macAppStoreCategories.count)
+        applicationCategory = [macAppStoreCategories objectAtIndex:index];
+    else {
+        [self.macAppStoreCategoryPopUpButton selectItemAtIndex:0];
+        applicationCategory = [macAppStoreCategories objectAtIndex:0];
+    }
 }
 
 
@@ -360,6 +516,15 @@
     }
 }
 
+
+///////////////////////
+// Packaging Actions //
+///////////////////////
+
+#pragma mark Packaging Actions
+
+- (IBAction)packagingCheckboxPressed:(id)sender {
+}
 
 ////////////////////////////////////////////
 // NSOpenSavePanelDelegate Implementation //

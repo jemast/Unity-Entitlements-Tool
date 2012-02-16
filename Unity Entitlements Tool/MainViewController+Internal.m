@@ -95,16 +95,53 @@
             
             return NO;
         }
+                
+        // Attempt to retrieve profile path
+        NSRange profileBeginRange = [scriptString rangeOfString:@"system(\"cp \\\""];
+        if (profileBeginRange.location != NSNotFound) {
+            NSString *scriptSubstring = [scriptString substringFromIndex:(profileBeginRange.location + profileBeginRange.length)];
+            NSRange profileEndRange = [scriptSubstring rangeOfString:@"\\\""];
+            if (profileEndRange.location != NSNotFound) {
+                postProcessScriptHasCodesign = YES;
+                provisioningProfilePath = [scriptSubstring substringToIndex:profileEndRange.location];
+            }
+        }
         
-        // Attempt to retrieve profile signature
+        // Attempt to retrieve bundle identifier
+        NSRange bundleIdBeginRange = [scriptString rangeOfString:@"\\\"CFBundleIdentifier\\\" -string \\\""];
+        if (bundleIdBeginRange.location != NSNotFound) {
+            NSString *scriptSubstring = [scriptString substringFromIndex:(bundleIdBeginRange.location + bundleIdBeginRange.length)];
+            NSRange bundleIdEndRange = [scriptSubstring rangeOfString:@"\\\""];
+            if (bundleIdEndRange.location != NSNotFound) {
+                bundleIdentifier = [scriptSubstring substringToIndex:bundleIdEndRange.location];
+            }
+        }
+        
+        // Attempt to retrieve Mac App Store category
+        NSRange masCategoryBeginRange = [scriptString rangeOfString:@"\\\"LSApplicationCategoryType\\\" -string \\\""];
+        if (masCategoryBeginRange.location != NSNotFound) {
+            NSString *scriptSubstring = [scriptString substringFromIndex:(masCategoryBeginRange.location + masCategoryBeginRange.length)];
+            NSRange masCategoryEndRange = [scriptSubstring rangeOfString:@"\\\""];
+            if (masCategoryEndRange.location != NSNotFound) {
+                applicationCategory = [scriptSubstring substringToIndex:masCategoryEndRange.location];
+            }
+        }
+        
+        // Attempt to retrieve certificate signature
         NSRange codeSignBeginRange = [scriptString rangeOfString:@"/usr/bin/codesign --force --sign \\\""];
         if (codeSignBeginRange.location != NSNotFound) {
             NSString *scriptSubstring = [scriptString substringFromIndex:(codeSignBeginRange.location + codeSignBeginRange.length)];
             NSRange codeSignEndRange = [scriptSubstring rangeOfString:@"\\\""];
             if (codeSignEndRange.location != NSNotFound) {
                 postProcessScriptHasCodesign = YES;
-                provisioningProfile = [scriptSubstring substringToIndex:codeSignEndRange.location];
+                provisioningCertificate = [scriptSubstring substringToIndex:codeSignEndRange.location];
             }
+        }
+        
+        // Attempt to retrieve packaging
+        NSRange packagingBeginRange = [scriptString rangeOfString:@"/usr/bin/productbuild --component \\\""];
+        if (packagingBeginRange.location != NSNotFound) {
+            postProcessScriptHasPackaging = YES;
         }
     }
     
@@ -143,6 +180,11 @@
 
 - (BOOL)updateProvisioningProfileList:(NSError *__autoreleasing *)error {
     // Make sure our arrays are ready and empty
+    if (provisioningProfilePaths == nil)
+        provisioningProfilePaths = [NSMutableArray array];
+    else
+        [provisioningProfilePaths removeAllObjects];
+    
     if (provisioningProfileNames == nil)
         provisioningProfileNames = [NSMutableArray array];
     else
@@ -253,6 +295,7 @@
         //////////////////////////////////////////////////////////////////
         // That's a valid certificate, we can add it to our lists
         
+        [provisioningProfilePaths addObject:url.path];
         [provisioningProfileNames addObject:profileName];
         [provisioningProfileAppIds addObject:profileAppId];
         [provisioningProfileCertificates addObject:(__bridge_transfer NSString *)certificateNameRef];
@@ -260,7 +303,18 @@
     
     // No profile ? No need to open anything...
     if (provisioningProfileNames.count == 0) {
-        NSError *profileError = [NSError errorWithDomain:NSCocoaErrorDomain code:0 userInfo:[NSDictionary dictionaryWithObject:@"Could not open or locate any valid provisioning profile." forKey:NSLocalizedDescriptionKey]];
+        /*NSAlert *alertView = [NSAlert alertWithMessageText:@"Provisioning Profile Error" defaultButton:@"Locate Profile" alternateButton:@"Cancel" otherButton:nil informativeTextWithFormat:@"Could not open or locate any valid provisioning profile."];
+        NSInteger alertReturnValue = [alertView runModal];
+        
+        // Do we want to locate a profile?
+        if (alertReturnValue == 1) {
+            NSOpenPanel *openPanel = [NSOpenPanel openPanel];
+            [openPanel setCanChooseFiles:YES];
+            [openPanel setCanChooseDirectories:NO];
+            [openPanel setAllowsMultipleSelection:NO];
+        }*/
+        
+        NSError *profileError = [NSError errorWithDomain:NSCocoaErrorDomain code:0 userInfo:[NSDictionary dictionaryWithObject:@"Cannot open project if no provisioning profile is provided." forKey:NSLocalizedDescriptionKey]];
         if (error != nil)
             *error = profileError;
         
@@ -282,10 +336,12 @@
         [self.codeSignIconImageView setImage:[NSImage imageNamed:@"grey-line-icon.png"]];
         [self.entitlementsIconImageView setImage:[NSImage imageNamed:@"grey-line-icon.png"]];
         [self.sandboxingIconImageView setImage:[NSImage imageNamed:@"grey-line-icon.png"]];
+        [self.packagingIconImageView setImage:[NSImage imageNamed:@"grey-line-icon.png"]];
     } else {
         [self.codeSignIconImageView setImage:(self.codeSignCheckbox.state ? [NSImage imageNamed:@"green-check-icon.png"] : [NSImage imageNamed:@"red-cross-icon.png"])];
         [self.entitlementsIconImageView setImage:(self.entitlementsCheckbox.state ? [NSImage imageNamed:@"green-check-icon.png"] : [NSImage imageNamed:@"red-cross-icon.png"])];
         [self.sandboxingIconImageView setImage:(self.sandboxingCheckbox.state ? [NSImage imageNamed:@"green-check-icon.png"] : [NSImage imageNamed:@"red-cross-icon.png"])];
+        [self.packagingIconImageView setImage:(self.packagingCheckbox.state ? [NSImage imageNamed:@"green-check-icon.png"] : [NSImage imageNamed:@"red-cross-icon.png"])];
     }
 }
 
@@ -298,49 +354,84 @@
     [self setCodeSignBoxActive];
     
     // Sync codesign UI
-    if ((provisioningProfile != nil) && (postProcessScriptHasCodesign == YES)) {
+    if ((provisioningCertificate != nil) && (postProcessScriptHasCodesign == YES)) {
         self.codeSignCheckbox.state = NSOnState;
         [self setEntitlementsBoxActive];
+        [self setPackagingBoxActive];
     } else {
         self.codeSignCheckbox.state = NSOffState;
         [self setEntitlementsBoxInactive];
+        [self setPackagingBoxInactive];
+    }
+    
+    // Set bundle id (may be overridden if profile was not found/invalid)
+    if (bundleIdentifier == nil)
+        bundleIdentifier = @"";
+    
+    [self.bundleIdentifierTextField setStringValue:bundleIdentifier];
+    
+    // Set Mac App Store category
+    if ([macAppStoreCategories containsObject:applicationCategory]) {
+        [self.macAppStoreCategoryPopUpButton selectItemAtIndex:[macAppStoreCategories indexOfObject:applicationCategory]];
+    } else {
+        [self.macAppStoreCategoryPopUpButton selectItemAtIndex:0];
+        applicationCategory = [macAppStoreCategories objectAtIndex:0];
     }
     
     // Do we have some provisioning profile loaded ?
-    if (provisioningProfile != nil) {
-        if ([provisioningProfileCertificates containsObject:provisioningProfile]) { // Do we have it locally ?
-            [self.provisioningProfilePopUpButton selectItemAtIndex:[provisioningProfileCertificates indexOfObject:provisioningProfile]];
-
+    BOOL didFindValidProfile = NO;
+    BOOL didFindInvalidProfile = NO;
+    if (provisioningProfilePath != nil) {
+        if ([provisioningProfilePaths containsObject:provisioningProfilePath]) { // Do we have it locally ?
+            NSInteger index = [provisioningProfilePaths indexOfObject:provisioningProfilePath];
+            [self.provisioningProfilePopUpButton selectItemAtIndex:index];
+            [self.provisioningProfileAppIdLabel setStringValue:[provisioningProfileAppIds objectAtIndex:index]];
+            [self.provisioningProfileCertificateLabel setStringValue:[provisioningProfileCertificates objectAtIndex:index]];
+            
             // Update iCloud key-value store text field
-            [self.iCloudKeyValueStoreTextField setStringValue:[provisioningProfileAppIds objectAtIndex:self.provisioningProfilePopUpButton.indexOfSelectedItem]];
+            [self.iCloudKeyValueStoreTextField setStringValue:[provisioningProfileAppIds objectAtIndex:index]];
             
             // Update iCloud container text field
-            [self.iCloudContainerTextField setStringValue:[provisioningProfileAppIds objectAtIndex:self.provisioningProfilePopUpButton.indexOfSelectedItem]];
+            [self.iCloudContainerTextField setStringValue:[provisioningProfileAppIds objectAtIndex:index]];
+            
+            // Mark we did find a valid profile
+            didFindValidProfile = YES;
         } else {
+            // Mark we did find an invalid profile
+            didFindInvalidProfile = YES;
+        }
+    }
+    
+    if (!didFindValidProfile) {
+        if (didFindInvalidProfile) {
             // This is codesigned with a profile we don't have... warn and pick our first profile in our list
             NSAlert *alert = [NSAlert alertWithMessageText:@"Provisioning Profile Not Found" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"The provisioning profile used to codesign this project was not found. You should pick a new provisioning profile or re-install the original profile."];
             [alert runModal];
-
-            // Just pick our first available profile
-            [self.provisioningProfilePopUpButton selectItemAtIndex:0];
-            provisioningProfile = [provisioningProfileCertificates objectAtIndex:self.provisioningProfilePopUpButton.indexOfSelectedItem];
-            
-            // Update iCloud key-value store text field
-            [self.iCloudKeyValueStoreTextField setStringValue:[provisioningProfileAppIds objectAtIndex:self.provisioningProfilePopUpButton.indexOfSelectedItem]];
-            
-            // Update iCloud container text field
-            [self.iCloudContainerTextField setStringValue:[provisioningProfileAppIds objectAtIndex:self.provisioningProfilePopUpButton.indexOfSelectedItem]];
         }
-    } else {
         // This obviously was not codesigned -- just pick our first available profile
         [self.provisioningProfilePopUpButton selectItemAtIndex:0];
-        provisioningProfile = [provisioningProfileCertificates objectAtIndex:self.provisioningProfilePopUpButton.indexOfSelectedItem];
+        [self.provisioningProfileAppIdLabel setStringValue:[provisioningProfileAppIds objectAtIndex:0]];
+        [self.provisioningProfileCertificateLabel setStringValue:[provisioningProfileCertificates objectAtIndex:0]];
+
+        provisioningCertificate = [provisioningProfileCertificates objectAtIndex:0];
+        provisioningProfilePath = [provisioningProfilePaths objectAtIndex:0];
+        
+        // Update bundle identifier
+        NSString *appId = [provisioningProfileAppIds objectAtIndex:0];
+        NSRange appIdFirstPart = [appId rangeOfString:@"."];
+        if (appIdFirstPart.location != NSNotFound) {
+            NSString *strippedAppId = [appId substringFromIndex:(appIdFirstPart.location + appIdFirstPart.length)];
+            bundleIdentifier = [strippedAppId stringByReplacingOccurrencesOfString:@"*" withString:@""];
+        } else {
+            bundleIdentifier = @"";
+        }
+        [self.bundleIdentifierTextField setStringValue:bundleIdentifier];
         
         // Update iCloud key-value store text field
-        [self.iCloudKeyValueStoreTextField setStringValue:[provisioningProfileAppIds objectAtIndex:self.provisioningProfilePopUpButton.indexOfSelectedItem]];
+        [self.iCloudKeyValueStoreTextField setStringValue:[provisioningProfileAppIds objectAtIndex:0]];
         
         // Update iCloud container text field
-        [self.iCloudContainerTextField setStringValue:[provisioningProfileAppIds objectAtIndex:self.provisioningProfilePopUpButton.indexOfSelectedItem]];
+        [self.iCloudContainerTextField setStringValue:[provisioningProfileAppIds objectAtIndex:0]];
     }
     
     // Sync entitlements UI
@@ -399,6 +490,14 @@
     else
         [self.sbPicturesFolderAccesPopUpButton selectItemAtIndex:0];
     
+    // Sync packaging UI
+    if (postProcessScriptHasPackaging) {
+        self.packagingCheckbox.state = NSOnState;
+    } else {
+        self.codeSignCheckbox.state = NSOffState;
+    }
+    
+    
     // Update project status
     [self updateProjectStatus];
 }
@@ -409,13 +508,26 @@
     postProcessScriptURL = nil;
     entitlementsURL = nil;
     
-    provisioningProfile = nil;
+    bundleIdentifier = nil;
+    applicationCategory = nil;
+    provisioningCertificate = nil;
+    provisioningProfilePath = nil;
     entitlements = nil;
     postProcessScriptHasCodesign = NO;
+    postProcessScriptHasPackaging = NO;
     
+    provisioningProfilePaths = nil;
     provisioningProfileNames = nil;
     provisioningProfileAppIds = nil;
     provisioningProfileCertificates = nil;
+    
+    // Make sure Mac App Store categories are populated
+    if (self.macAppStoreCategoryPopUpButton.numberOfItems == 0) {
+        // Populate Mac App Store category pop up list
+        for (NSString *title in macAppStoreCategoriesFullNames)
+            [self.macAppStoreCategoryPopUpButton addItemWithTitle:title];
+    }
+
     
     // Reset UI
     // Make all UI inactive
@@ -432,6 +544,8 @@
     // Reset user modifiable UI elements
     [self.codeSignCheckbox setState:NSOffState];
     [self.provisioningProfilePopUpButton removeAllItems];
+    [self.bundleIdentifierTextField setStringValue:@""];
+    [self.macAppStoreCategoryPopUpButton selectItemAtIndex:0];
     
     [self.entitlementsCheckbox setState:NSOffState];
     [self.iCloudKeyValueStoreTextField setStringValue:@""];
@@ -452,11 +566,15 @@
     [self.sbMusicFolderAccessPopUpButton selectItemAtIndex:0];
     [self.sbMoviesFolderAccessPopUpButton selectItemAtIndex:0];
     [self.sbPicturesFolderAccesPopUpButton selectItemAtIndex:0];
+    
+    [self.packagingCheckbox setState:NSOffState];
 }
 
 - (void)setCodeSignBoxActive {
     [self.codeSignCheckbox setEnabled:YES];
     [self.provisioningProfilePopUpButton setEnabled:YES];
+    [self.bundleIdentifierTextField setEnabled:YES];
+    [self.macAppStoreCategoryPopUpButton setEnabled:YES];
     
     // No IBOutletCollection ? No problem...
     for (id view in self.codeSignBox.recursiveSubviews)
@@ -464,15 +582,18 @@
             [view setTextColor:[NSColor controlTextColor]];
     
     // Maybe we should enable entitlements box as well ?
-    if (self.codeSignCheckbox.state == NSOnState)
+    if (self.codeSignCheckbox.state == NSOnState) {
         [self setEntitlementsBoxActive];
+        [self setPackagingBoxActive];
+    }
 }
 
 - (void)setCodeSignBoxInactive {
     // Disable components
-    [self.entitlementsCheckbox setEnabled:NO];
-    [self.iCloudKeyValueStoreTextField setEnabled:NO];
-    [self.iCloudContainerTextField setEnabled:NO];
+    [self.codeSignCheckbox setEnabled:NO];
+    [self.provisioningProfilePopUpButton setEnabled:NO];
+    [self.bundleIdentifierTextField setEnabled:NO];
+    [self.macAppStoreCategoryPopUpButton setEnabled:NO];
     
     // Grey out all labels
     // No IBOutletCollection ? No problem...
@@ -482,6 +603,7 @@
     
     // Recursively set entitlements inactive
     [self setEntitlementsBoxInactive];
+    [self setPackagingBoxInactive];
 }
 
 - (void)setEntitlementsBoxActive {
@@ -535,7 +657,7 @@
     [self.sbMoviesFolderAccessPopUpButton setEnabled:YES];
     [self.sbPicturesFolderAccesPopUpButton setEnabled:YES];
     
-    // Grey out all labels
+    // Dark out all labels
     // No IBOutletCollection ? No problem...
     for (id view in self.sandboxingBox.recursiveSubviews)
         if ([view tag] == 666)
@@ -567,7 +689,29 @@
             [view setTextColor:[NSColor disabledControlTextColor]];
 }
 
-- (void)updatePostProcessScript:(NSMutableString *)script codesign:(BOOL)withCodesign entitlements:(BOOL)withEntitlements {
+- (void)setPackagingBoxActive {
+    // Enable components
+    [self.packagingCheckbox setEnabled:YES];
+    
+    // Dark out all labels
+    // No IBOutletCollection ? No problem...
+    for (id view in self.packagingBox.recursiveSubviews)
+        if ([view tag] == 666)
+            [view setTextColor:[NSColor controlTextColor]];
+}
+
+- (void)setPackagingBoxInactive {
+    // Disable components
+    [self.packagingCheckbox setEnabled:NO];
+    
+    // Grey out all labels
+    // No IBOutletCollection ? No problem...
+    for (id view in self.packagingBox.recursiveSubviews)
+        if ([view tag] == 666)
+            [view setTextColor:[NSColor disabledControlTextColor]];
+}
+
+- (void)updatePostProcessScript:(NSMutableString *)script codesign:(BOOL)withCodesign entitlements:(BOOL)withEntitlements packaging:(BOOL)withPackaging {
     // Failsafe
     if ((script == nil) || (![script isKindOfClass:[NSMutableString class]]))
         return;
@@ -591,34 +735,36 @@
         
         // Mark as post process script as not having codesign
         postProcessScriptHasCodesign = NO;
+        postProcessScriptHasPackaging = NO;
     } else {
-        // Do we want entitlements with our codesigning ?
-        if (withEntitlements == YES) {
-            // Check wether we already had entitlements
-            NSRange beginRange = [script rangeOfString:@"#BEGIN APPLY ENTITLEMENTS"];
-            if (beginRange.location != NSNotFound) {
-                NSRange endRange = [script rangeOfString:@"#END APPLY ENTITLEMENTS"];
-                if (endRange.location != NSNotFound) {
-                    [script replaceCharactersInRange:NSMakeRange(beginRange.location + beginRange.length, endRange.location - (beginRange.location + beginRange.length)) 
-                                                     withString:[NSString stringWithFormat:@"\nmy $EntitlementsPublishFile = $ARGV[0];\nmy $EntitlementsPublishTarget = $ARGV[1];\nif (($EntitlementsPublishTarget eq \"standaloneOSXIntel\") || ($EntitlementsPublishTarget eq \"standaloneOSXUniversal\")) {\n    system(\"/usr/bin/codesign --force --sign \\\"%@\\\" --entitlements \\\"%@\\\" \\\"$EntitlementsPublishFile\\\"\");\n}\n", provisioningProfile, entitlementsURL.path]];
-                }
-            } else {
-                // No existing scripting stuff, append it
-                [script appendFormat:[NSString stringWithFormat:@"\n\n\n#BEGIN APPLY ENTITLEMENTS\nmy $EntitlementsPublishFile = $ARGV[0];\nmy $EntitlementsPublishTarget = $ARGV[1];\nif (($EntitlementsPublishTarget eq \"standaloneOSXIntel\") || ($EntitlementsPublishTarget eq \"standaloneOSXUniversal\")) {\n    system(\"/usr/bin/codesign --force --sign \\\"%@\\\" --entitlements \\\"%@\\\" \\\"$EntitlementsPublishFile\\\"\");\n}\n#END APPLY ENTITLEMENTS\n\n", provisioningProfile, entitlementsURL.path]];
+        // Prepare our perl operation string -- We will always embed provisioning profile so include this ; We will always update bundle identifier so include this as well
+        NSMutableString *perlOperationString = [NSMutableString stringWithFormat:@"\nmy $EntitlementsPublishFile = $ARGV[0];\nmy $EntitlementsPublishTarget = $ARGV[1];\nmy $EntitlementsPackageFile = $ARGV[0]; chop($EntitlementsPackageFile); chop($EntitlementsPackageFile); chop($EntitlementsPackageFile); $EntitlementsPackageFile = $EntitlementsPackageFile . 'pkg';\nif (($EntitlementsPublishTarget eq \"standaloneOSXIntel\") || ($EntitlementsPublishTarget eq \"standaloneOSXUniversal\")) {\n    system(\"cp \\\"%@\\\" \\\"$EntitlementsPublishFile/Contents/embedded.provisionprofile\\\"\");\n    system(\"defaults write \\\"$EntitlementsPublishFile/Contents/Info.plist\\\" \\\"CFBundleIdentifier\\\" -string \\\"%@\\\"\");\n    system(\"defaults write \\\"$EntitlementsPublishFile/Contents/Info.plist\\\" \\\"LSApplicationCategoryType\\\" -string \\\"%@\\\"\");", provisioningProfilePath, bundleIdentifier, applicationCategory];
+        
+        // Do we want entitlements or not?
+        if (withEntitlements == YES)
+            [perlOperationString appendFormat:@"\n    system(\"/usr/bin/codesign --force --sign \\\"%@\\\" --entitlements \\\"%@\\\" \\\"$EntitlementsPublishFile\\\"\");", provisioningCertificate, entitlementsURL.path];
+        else
+            [perlOperationString appendFormat:@"\n    system(\"/usr/bin/codesign --force --sign \\\"%@\\\" \\\"$EntitlementsPublishFile\\\"\");", provisioningCertificate];
+        
+        // Do we want packaging?
+        if (withPackaging == YES) {
+            [perlOperationString appendFormat:@"\n    system(\"/usr/bin/productbuild --component \\\"$EntitlementsPublishFile\\\" /Applications --sign \\\"%@\\\" --product \\\"$EntitlementsPublishFile/Contents/Info.plist\\\" \\\"$EntitlementsPackageFile\\\"\");", provisioningCertificate];
+            postProcessScriptHasPackaging = YES;
+        }
+        
+        // Append ending
+        [perlOperationString appendString:@"\n}\n"];
+        
+        // Check wether we already had our scripting stuff
+        NSRange beginRange = [script rangeOfString:@"#BEGIN APPLY ENTITLEMENTS"];
+        if (beginRange.location != NSNotFound) {
+            NSRange endRange = [script rangeOfString:@"#END APPLY ENTITLEMENTS"];
+            if (endRange.location != NSNotFound) {
+                [script replaceCharactersInRange:NSMakeRange(beginRange.location + beginRange.length, endRange.location - (beginRange.location + beginRange.length)) withString:perlOperationString];
             }
-        } else { // Just codesign
-            // Check wether we already had our scripting stuff
-            NSRange beginRange = [script rangeOfString:@"#BEGIN APPLY ENTITLEMENTS"];
-            if (beginRange.location != NSNotFound) {
-                NSRange endRange = [script rangeOfString:@"#END APPLY ENTITLEMENTS"];
-                if (endRange.location != NSNotFound) {
-                    [script replaceCharactersInRange:NSMakeRange(beginRange.location + beginRange.length, endRange.location - (beginRange.location + beginRange.length)) 
-                                          withString:[NSString stringWithFormat:@"\nmy $EntitlementsPublishFile = $ARGV[0];\nmy $EntitlementsPublishTarget = $ARGV[1];\nif (($EntitlementsPublishTarget eq \"standaloneOSXIntel\") || ($EntitlementsPublishTarget eq \"standaloneOSXUniversal\")) {\n    system(\"/usr/bin/codesign --force --sign \\\"%@\\\" \\\"$EntitlementsPublishFile\\\"\");\n}\n", provisioningProfile]];
-                }
-            } else {
-                // No existing scripting stuff, append it
-                [script appendFormat:[NSString stringWithFormat:@"\n\n\n#BEGIN APPLY ENTITLEMENTS\nmy $EntitlementsPublishFile = $ARGV[0];\nmy $EntitlementsPublishTarget = $ARGV[1];\nif (($EntitlementsPublishTarget eq \"standaloneOSXIntel\") || ($EntitlementsPublishTarget eq \"standaloneOSXUniversal\")) {\n    system(\"/usr/bin/codesign --force --sign \\\"%@\\\" \\\"$EntitlementsPublishFile\\\"\");\n}\n#END APPLY ENTITLEMENTS\n\n", provisioningProfile]];
-            }
+        } else {
+            // No existing scripting stuff, append it
+            [script appendFormat:@"\n\n\n#BEGIN APPLY ENTITLEMENTS%@#END APPLY ENTITLEMENTS\n\n", perlOperationString];
         }
         
         // Mark our post process script as having codesign

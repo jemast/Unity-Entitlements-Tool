@@ -13,7 +13,7 @@ This project was built on Xcode 4.2 GM under Mac OS Lion 10.7.2 GM. I have no id
 Authors
 -------
 
-**Jérémie Di Prizio**
+**Jérémie Di Prizio**  
 **Stéphane Di Prizio**
 
 License
