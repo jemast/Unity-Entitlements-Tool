@@ -1,5 +1,5 @@
 /********************************************************************************
- Copyright (c) 2011, jemast software
+ Copyright (c) 2011-2012, jemast software
  All rights reserved.
  
  Redistribution and use in source and binary forms, with or without
@@ -95,53 +95,105 @@
             
             return NO;
         }
-                
-        // Attempt to retrieve profile path
-        NSRange profileBeginRange = [scriptString rangeOfString:@"system(\"cp \\\""];
-        if (profileBeginRange.location != NSNotFound) {
-            NSString *scriptSubstring = [scriptString substringFromIndex:(profileBeginRange.location + profileBeginRange.length)];
-            NSRange profileEndRange = [scriptSubstring rangeOfString:@"\\\""];
-            if (profileEndRange.location != NSNotFound) {
-                postProcessScriptHasCodesign = YES;
-                provisioningProfilePath = [scriptSubstring substringToIndex:profileEndRange.location];
+        
+        // Narrow down to our entitlements
+        bool hasPreviousSettings = NO;
+        NSRange beginRange = [scriptString rangeOfString:@"\n\n\n#BEGIN APPLY ENTITLEMENTS"];
+        if (beginRange.location == NSNotFound)
+            beginRange = [scriptString rangeOfString:@"#BEGIN APPLY ENTITLEMENTS"];
+        
+        if (beginRange.location != NSNotFound) {
+            NSRange endRange = [scriptString rangeOfString:@"#END APPLY ENTITLEMENTS\n\n"];
+            if (endRange.location == NSNotFound)
+                endRange = [scriptString rangeOfString:@"#END APPLY ENTITLEMENTS"];
+            
+            if (endRange.location != NSNotFound) {
+                scriptString = [scriptString substringWithRange:NSMakeRange(beginRange.location, endRange.location + endRange.length - beginRange.location)];
+                hasPreviousSettings = YES;
             }
         }
         
-        // Attempt to retrieve bundle identifier
-        NSRange bundleIdBeginRange = [scriptString rangeOfString:@"\\\"CFBundleIdentifier\\\" -string \\\""];
-        if (bundleIdBeginRange.location != NSNotFound) {
-            NSString *scriptSubstring = [scriptString substringFromIndex:(bundleIdBeginRange.location + bundleIdBeginRange.length)];
-            NSRange bundleIdEndRange = [scriptSubstring rangeOfString:@"\\\""];
-            if (bundleIdEndRange.location != NSNotFound) {
-                bundleIdentifier = [scriptSubstring substringToIndex:bundleIdEndRange.location];
+        if (hasPreviousSettings) {
+            // Attempt to retrieve profile path
+            NSRegularExpression *profileRegex = [NSRegularExpression regularExpressionWithPattern:@"system\\(\\\"cp \\\\\\\".*?\\\\\\\" \\\\\\\"\\$EntitlementsPublishFile\\/Contents\\/embedded\\.provisionprofile\\\\\\\"\\\"\\);" options:0 error:nil];
+            NSRange profileBeginRange = [profileRegex rangeOfFirstMatchInString:scriptString options:0 range:NSMakeRange(0, scriptString.length)];
+            if (profileBeginRange.location != NSNotFound) {
+                NSString *scriptSubstring = [scriptString substringFromIndex:(profileBeginRange.location + 13)];
+                NSRange profileEndRange = [scriptSubstring rangeOfString:@"\\\""];
+                if (profileEndRange.location != NSNotFound) {
+                    postProcessScriptHasCodesign = YES;
+                    provisioningProfilePath = [scriptSubstring substringToIndex:profileEndRange.location];
+                }
             }
-        }
-        
-        // Attempt to retrieve Mac App Store category
-        NSRange masCategoryBeginRange = [scriptString rangeOfString:@"\\\"LSApplicationCategoryType\\\" -string \\\""];
-        if (masCategoryBeginRange.location != NSNotFound) {
-            NSString *scriptSubstring = [scriptString substringFromIndex:(masCategoryBeginRange.location + masCategoryBeginRange.length)];
-            NSRange masCategoryEndRange = [scriptSubstring rangeOfString:@"\\\""];
-            if (masCategoryEndRange.location != NSNotFound) {
-                applicationCategory = [scriptSubstring substringToIndex:masCategoryEndRange.location];
+            
+            // Attempt to retrieve bundle identifier
+            NSRange bundleIdBeginRange = [scriptString rangeOfString:@"\\\"CFBundleIdentifier\\\" -string \\\""];
+            if (bundleIdBeginRange.location != NSNotFound) {
+                NSString *scriptSubstring = [scriptString substringFromIndex:(bundleIdBeginRange.location + bundleIdBeginRange.length)];
+                NSRange bundleIdEndRange = [scriptSubstring rangeOfString:@"\\\""];
+                if (bundleIdEndRange.location != NSNotFound) {
+                    bundleIdentifier = [scriptSubstring substringToIndex:bundleIdEndRange.location];
+                }
             }
-        }
-        
-        // Attempt to retrieve certificate signature
-        NSRange codeSignBeginRange = [scriptString rangeOfString:@"/usr/bin/codesign --force --sign \\\""];
-        if (codeSignBeginRange.location != NSNotFound) {
-            NSString *scriptSubstring = [scriptString substringFromIndex:(codeSignBeginRange.location + codeSignBeginRange.length)];
-            NSRange codeSignEndRange = [scriptSubstring rangeOfString:@"\\\""];
-            if (codeSignEndRange.location != NSNotFound) {
-                postProcessScriptHasCodesign = YES;
-                provisioningCertificate = [scriptSubstring substringToIndex:codeSignEndRange.location];
+            
+            // Attempt to retrieve Mac App Store category
+            NSRange masCategoryBeginRange = [scriptString rangeOfString:@"\\\"LSApplicationCategoryType\\\" -string \\\""];
+            if (masCategoryBeginRange.location != NSNotFound) {
+                NSString *scriptSubstring = [scriptString substringFromIndex:(masCategoryBeginRange.location + masCategoryBeginRange.length)];
+                NSRange masCategoryEndRange = [scriptSubstring rangeOfString:@"\\\""];
+                if (masCategoryEndRange.location != NSNotFound) {
+                    applicationCategory = [scriptSubstring substringToIndex:masCategoryEndRange.location];
+                }
             }
-        }
-        
-        // Attempt to retrieve packaging
-        NSRange packagingBeginRange = [scriptString rangeOfString:@"/usr/bin/productbuild --component \\\""];
-        if (packagingBeginRange.location != NSNotFound) {
-            postProcessScriptHasPackaging = YES;
+            
+            // Attempt to retrieve version number
+            NSRange versionNumberBeginRange = [scriptString rangeOfString:@"\\\"CFBundleVersion\\\" -string \\\""];
+            if (versionNumberBeginRange.location != NSNotFound) {
+                NSString *scriptSubstring = [scriptString substringFromIndex:(versionNumberBeginRange.location + versionNumberBeginRange.length)];
+                NSRange versionNumberEndRange = [scriptSubstring rangeOfString:@"\\\""];
+                if (versionNumberEndRange.location != NSNotFound) {
+                    versionNumber = [scriptSubstring substringToIndex:versionNumberEndRange.location];
+                }
+            }
+            
+            // Attempt to retrieve bundle getinfo
+            NSRange bundleGetInfoBeginRange = [scriptString rangeOfString:@"\\\"CFBundleGetInfoString\\\" -string \\\""];
+            if (bundleGetInfoBeginRange.location != NSNotFound) {
+                NSString *scriptSubstring = [scriptString substringFromIndex:(bundleGetInfoBeginRange.location + bundleGetInfoBeginRange.length)];
+                NSRange bundleGetInfoEndRange = [scriptSubstring rangeOfString:@"\\\""];
+                if (bundleGetInfoEndRange.location != NSNotFound) {
+                    bundleGetInfo = [scriptSubstring substringToIndex:bundleGetInfoEndRange.location];
+                }
+            }
+            
+            // Attempt to retrieve custom icon
+            NSRegularExpression *customIconRegex = [NSRegularExpression regularExpressionWithPattern:@"system\\(\\\"cp \\\\\\\".*?\\\\\\\" \\\\\\\"\\$EntitlementsPublishFile\\/Contents\\/Resources\\/UnityPlayer\\.icns\\\\\\\"\\\"\\);" options:0 error:nil];
+            NSRange customIconBeginRange = [customIconRegex rangeOfFirstMatchInString:scriptString options:0 range:NSMakeRange(0, scriptString.length)];
+            if (customIconBeginRange.location != NSNotFound) {
+                NSString *scriptSubstring = [scriptString substringFromIndex:(customIconBeginRange.location + 13)];
+                NSRange customIconEndRange = [scriptSubstring rangeOfString:@"\\\""];
+                if (customIconEndRange.location != NSNotFound) {
+                   customIconPath = [scriptSubstring substringToIndex:customIconEndRange.location];
+                }
+            }
+
+            
+            // Attempt to retrieve certificate signature
+            NSRange codeSignBeginRange = [scriptString rangeOfString:@"/usr/bin/codesign --force --sign \\\""];
+            if (codeSignBeginRange.location != NSNotFound) {
+                NSString *scriptSubstring = [scriptString substringFromIndex:(codeSignBeginRange.location + codeSignBeginRange.length)];
+                NSRange codeSignEndRange = [scriptSubstring rangeOfString:@"\\\""];
+                if (codeSignEndRange.location != NSNotFound) {
+                    postProcessScriptHasCodesign = YES;
+                    provisioningCertificate = [scriptSubstring substringToIndex:codeSignEndRange.location];
+                }
+            }
+            
+            // Attempt to retrieve packaging
+            NSRange packagingBeginRange = [scriptString rangeOfString:@"/usr/bin/productbuild --component \\\""];
+            if (packagingBeginRange.location != NSNotFound) {
+                postProcessScriptHasPackaging = YES;
+            }
         }
     }
     
@@ -378,6 +430,22 @@
         applicationCategory = [macAppStoreCategories objectAtIndex:0];
     }
     
+    // Set version number
+    if (versionNumber == nil)
+        versionNumber = @"";
+    
+    [self.versionNumberTextField setStringValue:versionNumber];
+    
+    // Set bundle GetInfo
+    if (bundleGetInfo == nil)
+        bundleGetInfo = @"";
+    
+    [self.bundleGetInfoTextField setStringValue:bundleGetInfo];
+    
+    // Set custom icon
+    if (customIconPath != nil)
+        [self.customIconImageWell setImage:[[NSImage alloc] initWithContentsOfFile:customIconPath]];
+    
     // Do we have some provisioning profile loaded ?
     BOOL didFindValidProfile = NO;
     BOOL didFindInvalidProfile = NO;
@@ -510,6 +578,8 @@
     
     bundleIdentifier = nil;
     applicationCategory = nil;
+    versionNumber = nil;
+    bundleGetInfo = nil;
     provisioningCertificate = nil;
     provisioningProfilePath = nil;
     entitlements = nil;
@@ -546,6 +616,8 @@
     [self.provisioningProfilePopUpButton removeAllItems];
     [self.bundleIdentifierTextField setStringValue:@""];
     [self.macAppStoreCategoryPopUpButton selectItemAtIndex:0];
+    [self.versionNumberTextField setStringValue:@""];
+    [self.bundleGetInfoTextField setStringValue:@""];
     
     [self.entitlementsCheckbox setState:NSOffState];
     [self.iCloudKeyValueStoreTextField setStringValue:@""];
@@ -575,6 +647,11 @@
     [self.provisioningProfilePopUpButton setEnabled:YES];
     [self.bundleIdentifierTextField setEnabled:YES];
     [self.macAppStoreCategoryPopUpButton setEnabled:YES];
+    [self.versionNumberTextField setEnabled:YES];
+    [self.bundleGetInfoTextField setEnabled:YES];
+    [self.customIconImageWell setEnabled:YES];
+    [self.setCustomIconButton setEnabled:YES];
+    [self.unsetCustomIconButton setEnabled:YES];
     
     // No IBOutletCollection ? No problem...
     for (id view in self.codeSignBox.recursiveSubviews)
@@ -594,7 +671,12 @@
     [self.provisioningProfilePopUpButton setEnabled:NO];
     [self.bundleIdentifierTextField setEnabled:NO];
     [self.macAppStoreCategoryPopUpButton setEnabled:NO];
-    
+    [self.versionNumberTextField setEnabled:NO];
+    [self.bundleGetInfoTextField setEnabled:NO];
+    [self.customIconImageWell setEnabled:NO];
+    [self.setCustomIconButton setEnabled:NO];
+    [self.unsetCustomIconButton setEnabled:NO];
+   
     // Grey out all labels
     // No IBOutletCollection ? No problem...
     for (id view in self.entitlementsBox.recursiveSubviews)
@@ -739,6 +821,21 @@
     } else {
         // Prepare our perl operation string -- We will always embed provisioning profile so include this ; We will always update bundle identifier so include this as well
         NSMutableString *perlOperationString = [NSMutableString stringWithFormat:@"\nmy $EntitlementsPublishFile = $ARGV[0];\nmy $EntitlementsPublishTarget = $ARGV[1];\nmy $EntitlementsPackageFile = $ARGV[0]; chop($EntitlementsPackageFile); chop($EntitlementsPackageFile); chop($EntitlementsPackageFile); $EntitlementsPackageFile = $EntitlementsPackageFile . 'pkg';\nif (($EntitlementsPublishTarget eq \"standaloneOSXIntel\") || ($EntitlementsPublishTarget eq \"standaloneOSXUniversal\")) {\n    system(\"cp \\\"%@\\\" \\\"$EntitlementsPublishFile/Contents/embedded.provisionprofile\\\"\");\n    system(\"defaults write \\\"$EntitlementsPublishFile/Contents/Info.plist\\\" \\\"CFBundleIdentifier\\\" -string \\\"%@\\\"\");\n    system(\"defaults write \\\"$EntitlementsPublishFile/Contents/Info.plist\\\" \\\"LSApplicationCategoryType\\\" -string \\\"%@\\\"\");", provisioningProfilePath, bundleIdentifier, applicationCategory];
+        
+        // Add version number
+        [perlOperationString appendFormat:@"\n    system(\"defaults write \\\"$EntitlementsPublishFile/Contents/Info.plist\\\" \\\"CFBundleVersion\\\" -string \\\"%@\\\"\");", versionNumber];
+        [perlOperationString appendFormat:@"\n    system(\"defaults write \\\"$EntitlementsPublishFile/Contents/Info.plist\\\" \\\"CFBundleShortVersionString\\\" -string \\\"%@\\\"\");", versionNumber];
+        
+        // Add bundle getinfo if specified
+        if ((bundleGetInfo != nil) && ! [bundleGetInfo isEqualToString:@""])
+            [perlOperationString appendFormat:@"\n    system(\"defaults write \\\"$EntitlementsPublishFile/Contents/Info.plist\\\" \\\"CFBundleGetInfoString\\\" -string \\\"%@\\\"\");", bundleGetInfo];
+        
+        // Copy custom icon
+        if ((customIconPath != nil) && ! [customIconPath isEqualToString:@""])
+            [perlOperationString appendFormat:@"\n    system(\"cp \\\"%@\\\" \\\"$EntitlementsPublishFile/Contents/Resources/UnityPlayer.icns\\\"\");", customIconPath];
+        
+        // chmod bundle
+        [perlOperationString appendString:@"\n    system(\"chmod -R a+xr \\\"$EntitlementsPublishFile\\\"\");"];
         
         // Do we want entitlements or not?
         if (withEntitlements == YES)

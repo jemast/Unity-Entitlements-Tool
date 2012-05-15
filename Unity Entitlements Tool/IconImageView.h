@@ -23,38 +23,11 @@
  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
-********************************************************************************/
+ ********************************************************************************/
 
 
-#import "NSDictionary+Helpers.h"
+#import <Cocoa/Cocoa.h>
 
-@implementation NSDictionary (Helpers)
-
-+ (id)dictionaryWithXMLData:(NSData *)data {
-	// Uses toll-free bridging for data into CFDataRef and CFPropertyList into NSDictionary
-    CFPropertyListFormat format = kCFPropertyListXMLFormat_v1_0;
-    CFPropertyListMutabilityOptions options = ((self == [NSMutableDictionary class]) ? kCFPropertyListMutableContainers : kCFPropertyListImmutable);
-	CFPropertyListRef plist =  CFPropertyListCreateWithData(kCFAllocatorDefault, (__bridge CFDataRef)data, options, &format, NULL);
-    
-	// We check if it is the correct type
-	if (![(__bridge id)plist isKindOfClass:self]) {
-		// Clean up ref if necessary
-        if (plist != nil)
-            CFRelease(plist);
-        
-		return nil;
-	}
-    
-    // Valid
-    return (__bridge_transfer id)plist;
-}
-
-- (NSData *)xmlData {
-    NSData *data = (__bridge_transfer NSData *)CFPropertyListCreateData(kCFAllocatorDefault, (__bridge CFPropertyListRef)self, kCFPropertyListXMLFormat_v1_0, 0, NULL);
-    
-    return data;
-}
-
-
+@interface IconImageView : NSImageView
 
 @end

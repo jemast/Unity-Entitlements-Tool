@@ -1,5 +1,5 @@
 /********************************************************************************
- Copyright (c) 2011, jemast software
+ Copyright (c) 2011-2012, jemast software
  All rights reserved.
  
  Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,7 @@
 
 @synthesize projectNameLabel, projectIconImageView, codeSignIconImageView, entitlementsIconImageView, sandboxingIconImageView, packagingIconImageView, pickProjectDirectoryButton, updateBuildPipelineButton, clearBuildPipelineButton;
 
-@synthesize codeSignBox, provisioningProfileAppIdLabel, provisioningProfileCertificateLabel, provisioningProfilePopUpButton, codeSignCheckbox, bundleIdentifierTextField, macAppStoreCategoryPopUpButton;
+@synthesize codeSignBox, provisioningProfileAppIdLabel, provisioningProfileCertificateLabel, provisioningProfilePopUpButton, codeSignCheckbox, bundleIdentifierTextField, macAppStoreCategoryPopUpButton, versionNumberTextField, bundleGetInfoTextField, setCustomIconButton, unsetCustomIconButton, customIconImageWell;
 
 @synthesize entitlementsBox, entitlementsCheckbox, iCloudContainerTextField, iCloudKeyValueStoreTextField;
 
@@ -139,10 +139,17 @@
                                           @"Utilities",
                                           @"Video",
                                           @"Weather",
-                                          nil];        
+                                          nil];
     }
     
     return self;
+}
+
+- (void)awakeFromNib {
+    // register drag & drops for custom icon
+    //[self.customIconImageWell unregisterDraggedTypes];
+    //[self.customIconImageWell registerForDraggedTypes:[NSArray arrayWithObjects: NSFilenamesPboardType, (NSString*)kUTTypeAppleICNS, nil]];
+    //NSLog(@"%@", self.customIconImageWell.registeredDraggedTypes);
 }
 
 
@@ -211,6 +218,8 @@
     
     // Force update text-fields -- if we're still in the text field, update message is not sent so just force update it
     [self bundleIdentifierTextFieldEdited:self.bundleIdentifierTextField];
+    [self versionNumberTextFieldEdited:self.versionNumberTextField];
+    [self bundleGetInfoTextFieldEdited:self.bundleGetInfoTextField];
     [self iCloudKeyValueStoreTextFieldEdited:self.iCloudKeyValueStoreTextField];
     [self iCloudContainerTextFieldEdited:self.iCloudContainerTextField];
     
@@ -347,6 +356,42 @@
         [self.macAppStoreCategoryPopUpButton selectItemAtIndex:0];
         applicationCategory = [macAppStoreCategories objectAtIndex:0];
     }
+}
+
+- (IBAction)versionNumberTextFieldEdited:(id)sender {
+    // Update version number
+    versionNumber = [self.versionNumberTextField stringValue];
+}
+
+- (IBAction)bundleGetInfoTextFieldEdited:(id)sender {
+    // Update bundle get info
+    bundleGetInfo = [self.bundleGetInfoTextField stringValue];
+}
+
+- (IBAction)setCustomIconButtonPressed:(id)sender {
+    NSOpenPanel *openPanel = [NSOpenPanel openPanel];
+    openPanel.canChooseFiles = YES;
+    openPanel.canChooseDirectories = NO;
+    openPanel.allowsMultipleSelection = NO;
+    openPanel.delegate = self;
+    openPanel.title = @"Pick Custom Icon File";
+    [openPanel setAllowedFileTypes:[NSArray arrayWithObject:@"icns"]];
+    openPanel.allowsOtherFileTypes = NO;
+    [openPanel beginWithCompletionHandler:^(NSInteger result) {
+        if (result == NSFileHandlingPanelOKButton) {
+            customIconPath = [[[openPanel URLs] lastObject] path];
+            [self.customIconImageWell setImage:[[NSImage alloc] initWithContentsOfFile:customIconPath]];
+        }
+    }];
+}
+
+- (IBAction)unsetCustomIconButtonPressed:(id)sender {
+    [self.customIconImageWell setImage:nil];
+    customIconPath = nil;
+}
+
+- (IBAction)customIconWellAction:(id)sender {
+    customIconPath = [[(NSImageView *)sender image] name];
 }
 
 
@@ -533,6 +578,9 @@
 #pragma mark NSOpenSavePanelDelegate Implementation
 
 - (BOOL)panel:(id)sender validateURL:(NSURL *)url error:(NSError **)outError {
+    if (((NSOpenPanel *)sender).canChooseFiles)
+        return YES;
+    
     // This block will allow easy early returns for invalid directories
     BOOL (^presentInvalidPanel)() = ^(void) {
         // Invalid folder, alert and prevent open panel validation

@@ -1,5 +1,5 @@
 /********************************************************************************
- Copyright (c) 2011, jemast software
+ Copyright (c) 2011-2012, jemast software
  All rights reserved.
  
  Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,9 @@
     
     NSString *bundleIdentifier;
     NSString *applicationCategory;
+    NSString *versionNumber;
+    NSString *bundleGetInfo;
+    NSString *customIconPath;
     NSString *provisioningCertificate;
     NSString *provisioningProfilePath;
     NSMutableDictionary *entitlements;
@@ -88,18 +91,31 @@
 // Buttons
 @property (unsafe_unretained) IBOutlet NSPopUpButton *provisioningProfilePopUpButton;
 @property (unsafe_unretained) IBOutlet NSPopUpButton *macAppStoreCategoryPopUpButton;
+@property (unsafe_unretained) IBOutlet NSButton *setCustomIconButton;
+@property (unsafe_unretained) IBOutlet NSButton *unsetCustomIconButton;
 
 // Checkboxes
 @property (unsafe_unretained) IBOutlet NSButton *codeSignCheckbox;
 
 // Text fields
 @property (unsafe_unretained) IBOutlet NSTextField *bundleIdentifierTextField;
+@property (unsafe_unretained) IBOutlet NSTextField *versionNumberTextField;
+@property (unsafe_unretained) IBOutlet NSTextField *bundleGetInfoTextField;
+
+// Image wells
+@property (unsafe_unretained) IBOutlet NSImageView *customIconImageWell;
+
 
 // Actions
 - (IBAction)codeSignCheckboxPressed:(id)sender;
 - (IBAction)provisioningProfilePicked:(id)sender;
 - (IBAction)bundleIdentifierTextFieldEdited:(id)sender;
 - (IBAction)appStoreCategoryPicked:(id)sender;
+- (IBAction)versionNumberTextFieldEdited:(id)sender;
+- (IBAction)bundleGetInfoTextFieldEdited:(id)sender;
+- (IBAction)setCustomIconButtonPressed:(id)sender;
+- (IBAction)unsetCustomIconButtonPressed:(id)sender;
+- (IBAction)customIconWellAction:(id)sender;
 
 
 ////////////////////////
