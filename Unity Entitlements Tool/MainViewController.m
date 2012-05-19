@@ -44,7 +44,7 @@
 
 @synthesize sandboxingBox, sandboxingCheckbox, sbAllowDownloadsFolderAccessCheckbox, sbAllowIncomingNetworkConnectionsCheckbox, sbAllowOutgoingNetworkConnectionsCheckbox, sbAllowCameraAccessCheckbox, sbAllowMicrophoneAccessCheckbox, sbAllowUSBAccessCheckbox, sbAllowPrintingCheckbox, sbAllowAddressBookDataAccessCheckbox, sbAllowLocationServicesAccessCheckbox, sbAllowCalendarDataAccessCheckbox, sbFileSystemAccessPopUpButton, sbMusicFolderAccessPopUpButton, sbMoviesFolderAccessPopUpButton, sbPicturesFolderAccesPopUpButton;
 
-@synthesize packagingBox, packagingCheckbox;
+@synthesize packagingBox, packagingCheckbox, installerCertificatePopUpButton;
 
 
 ////////////////////
@@ -197,6 +197,12 @@
             // Update provisioning profile list
             NSError *profileError = nil;
             if (![self updateProvisioningProfileList:&profileError]) {
+                couldNotOpenProject(profileError);
+                return;
+            }
+            
+            // Update installer profile list
+            if (![self updateInstallerProfileList:&profileError]) {
                 couldNotOpenProject(profileError);
                 return;
             }
@@ -569,6 +575,11 @@
 #pragma mark Packaging Actions
 
 - (IBAction)packagingCheckboxPressed:(id)sender {
+}
+
+- (IBAction)installerCertificatePicked:(id)sender {
+    // Set new cert
+    packagingCertificate = [packagingCertificates objectAtIndex:self.installerCertificatePopUpButton.indexOfSelectedItem];
 }
 
 ////////////////////////////////////////////

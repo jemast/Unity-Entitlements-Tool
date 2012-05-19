@@ -190,9 +190,14 @@
             }
             
             // Attempt to retrieve packaging
-            NSRange packagingBeginRange = [scriptString rangeOfString:@"/usr/bin/productbuild --component \\\""];
+            NSRange packagingBeginRange = [scriptString rangeOfString:@"/usr/bin/productbuild --component \\\"$EntitlementsPublishFile\\\" /Applications --sign \\\""];
             if (packagingBeginRange.location != NSNotFound) {
-                postProcessScriptHasPackaging = YES;
+                NSString *scriptSubstring = [scriptString substringFromIndex:(packagingBeginRange.location + packagingBeginRange.length)];
+                NSRange packagingEndRange = [scriptSubstring rangeOfString:@"\\\""];
+                if (packagingEndRange.location != NSNotFound) {
+                    postProcessScriptHasPackaging = YES;
+                    packagingCertificate = [scriptSubstring substringToIndex:packagingEndRange.location];
+                }
             }
         }
     }
@@ -251,6 +256,11 @@
         provisioningProfileCertificates = [NSMutableArray array];
     else
         [provisioningProfileCertificates removeAllObjects];
+    
+    if (packagingCertificates == nil)
+        packagingCertificates = [NSMutableArray array];
+    else
+        [packagingCertificates removeAllObjects];
     
     // Get provisioning profiles URL
     NSURL *libraryURL = [[[NSFileManager defaultManager] URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask] objectAtIndex:0];
@@ -366,7 +376,7 @@
             [openPanel setAllowsMultipleSelection:NO];
         }*/
         
-        NSError *profileError = [NSError errorWithDomain:NSCocoaErrorDomain code:0 userInfo:[NSDictionary dictionaryWithObject:@"Cannot open project if no provisioning profile is provided." forKey:NSLocalizedDescriptionKey]];
+        NSError *profileError = [NSError errorWithDomain:NSCocoaErrorDomain code:0 userInfo:[NSDictionary dictionaryWithObject:@"Cannot open project if no provisioning profile is available." forKey:NSLocalizedDescriptionKey]];
         if (error != nil)
             *error = profileError;
         
@@ -378,6 +388,53 @@
     [self.provisioningProfilePopUpButton addItemsWithTitles:provisioningProfileNames];
     [self.provisioningProfileAppIdLabel setStringValue:[provisioningProfileAppIds objectAtIndex:0]];
     [self.provisioningProfileCertificateLabel setStringValue:[provisioningProfileCertificates objectAtIndex:0]];
+    
+    return YES;
+}
+
+- (BOOL)updateInstallerProfileList:(NSError *__autoreleasing *)error {
+    // Clear list
+    [self.installerCertificatePopUpButton removeAllItems];
+    
+    // Search certificates
+    NSDictionary *query = [NSDictionary dictionaryWithObjectsAndKeys:
+                           kSecClassCertificate, kSecClass,
+                           kCFBooleanTrue, kSecReturnRef,
+                           kSecMatchLimitAll, kSecMatchLimit,
+                           kCFBooleanTrue, kSecAttrCanSign,
+                           nil];
+    
+    CFTypeRef attributes;
+    OSStatus status = SecItemCopyMatching((__bridge CFDictionaryRef)query, (CFTypeRef *)&attributes);
+    NSArray *items = (__bridge_transfer NSArray *)attributes;
+    
+    // Make sure we succeeded in fetching certs
+    if (status) {
+        if (error != nil)
+            *error = [NSError errorWithDomain:NSCocoaErrorDomain code:0 userInfo:[NSDictionary dictionaryWithObject:@"Can't search keychain." forKey:NSLocalizedDescriptionKey]];
+        
+        return NO;
+    }
+    
+    // Filter out Mac Dev certificates
+    for (id object in items) {
+        CFStringRef certificateNameRef;
+        SecCertificateCopyCommonName((__bridge SecCertificateRef)object, &certificateNameRef);
+        NSString *certName = (__bridge_transfer NSString *)certificateNameRef;
+        if ([certName hasPrefix:@"3rd Party Mac Developer "])
+            [packagingCertificates addObject:certName];
+    }
+    
+    // No cert ? No need to open anything...
+    if (packagingCertificates.count == 0) {
+        if (error != nil)
+            *error = [NSError errorWithDomain:NSCocoaErrorDomain code:0 userInfo:[NSDictionary dictionaryWithObject:@"Cannot open project if no packaging certificate is available." forKey:NSLocalizedDescriptionKey]];
+        
+        return NO;
+    }
+    
+    // Populate list
+    [self.installerCertificatePopUpButton addItemsWithTitles:packagingCertificates];
     
     return YES;
 }
@@ -502,6 +559,35 @@
         [self.iCloudContainerTextField setStringValue:[provisioningProfileAppIds objectAtIndex:0]];
     }
     
+    // Do we have packaging certificate loaded?
+    BOOL didFindValidCert = NO;
+    BOOL didFindInvalidCert = NO;
+    if (packagingCertificate != nil) {
+        if ([packagingCertificates containsObject:packagingCertificate]) { // Do we have it locally ?
+            NSInteger index = [packagingCertificates indexOfObject:packagingCertificate];
+            [self.installerCertificatePopUpButton selectItemAtIndex:index];
+            
+            // Mark we did find a valid profile
+            didFindValidCert = YES;
+        } else {
+            // Mark we did find an invalid profile
+            didFindInvalidCert = YES;
+        }
+    }
+    
+    if (!didFindValidCert) {
+        if (didFindInvalidCert) {
+            // This is codesigned with a profile we don't have... warn and pick our first profile in our list
+            NSAlert *alert = [NSAlert alertWithMessageText:@"Packaging Certificate Not Found" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"The packaging certificate used to codesign this project installer was not found. You should pick a new packaging certificate or re-install the original certificate."];
+            [alert runModal];
+        }
+        
+        // This obviously was not codesigned -- just pick our first available profile
+        [self.installerCertificatePopUpButton selectItemAtIndex:0];
+        
+        packagingCertificate = [packagingCertificates objectAtIndex:0];
+    }
+    
     // Sync entitlements UI
     if (entitlements.count != 0) {
         self.entitlementsCheckbox.state = NSOnState;
@@ -582,6 +668,7 @@
     bundleGetInfo = nil;
     provisioningCertificate = nil;
     provisioningProfilePath = nil;
+    packagingCertificate = nil;
     entitlements = nil;
     postProcessScriptHasCodesign = NO;
     postProcessScriptHasPackaging = NO;
@@ -590,6 +677,7 @@
     provisioningProfileNames = nil;
     provisioningProfileAppIds = nil;
     provisioningProfileCertificates = nil;
+    packagingCertificates = nil;
     
     // Make sure Mac App Store categories are populated
     if (self.macAppStoreCategoryPopUpButton.numberOfItems == 0) {
@@ -640,6 +728,7 @@
     [self.sbPicturesFolderAccesPopUpButton selectItemAtIndex:0];
     
     [self.packagingCheckbox setState:NSOffState];
+    [self.installerCertificatePopUpButton selectItemAtIndex:0];
 }
 
 - (void)setCodeSignBoxActive {
@@ -774,6 +863,7 @@
 - (void)setPackagingBoxActive {
     // Enable components
     [self.packagingCheckbox setEnabled:YES];
+    [self.installerCertificatePopUpButton setEnabled:YES];
     
     // Dark out all labels
     // No IBOutletCollection ? No problem...
@@ -785,6 +875,7 @@
 - (void)setPackagingBoxInactive {
     // Disable components
     [self.packagingCheckbox setEnabled:NO];
+    [self.installerCertificatePopUpButton setEnabled:NO];
     
     // Grey out all labels
     // No IBOutletCollection ? No problem...
@@ -845,7 +936,7 @@
         
         // Do we want packaging?
         if (withPackaging == YES) {
-            [perlOperationString appendFormat:@"\n    system(\"/usr/bin/productbuild --component \\\"$EntitlementsPublishFile\\\" /Applications --sign \\\"%@\\\" --product \\\"$EntitlementsPublishFile/Contents/Info.plist\\\" \\\"$EntitlementsPackageFile\\\"\");", provisioningCertificate];
+            [perlOperationString appendFormat:@"\n    system(\"/usr/bin/productbuild --component \\\"$EntitlementsPublishFile\\\" /Applications --sign \\\"%@\\\" --product \\\"$EntitlementsPublishFile/Contents/Info.plist\\\" \\\"$EntitlementsPackageFile\\\"\");", packagingCertificate];
             postProcessScriptHasPackaging = YES;
         }
         

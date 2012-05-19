@@ -43,6 +43,7 @@
     NSString *customIconPath;
     NSString *provisioningCertificate;
     NSString *provisioningProfilePath;
+    NSString *packagingCertificate;
     NSMutableDictionary *entitlements;
     BOOL postProcessScriptHasCodesign;
     BOOL postProcessScriptHasPackaging;
@@ -51,6 +52,7 @@
     NSMutableArray *provisioningProfileNames;
     NSMutableArray *provisioningProfileAppIds;
     NSMutableArray *provisioningProfileCertificates;
+    NSMutableArray *packagingCertificates;
 }
 
 ///////////////////
@@ -178,8 +180,12 @@
 // Checkboxes
 @property (unsafe_unretained) IBOutlet NSButton *packagingCheckbox;
 
+// Buttons
+@property (unsafe_unretained) IBOutlet NSPopUpButton *installerCertificatePopUpButton;
+
 // Actions
 - (IBAction)packagingCheckboxPressed:(id)sender;
+- (IBAction)installerCertificatePicked:(id)sender;
 
 
 @end
@@ -193,6 +199,7 @@
 
 - (BOOL)importProjectBuildPipeline:(NSError *__autoreleasing *)error;
 - (BOOL)updateProvisioningProfileList:(NSError *__autoreleasing *)error;
+- (BOOL)updateInstallerProfileList:(NSError *__autoreleasing *)error;
 
 - (void)updateProjectStatus;
 - (void)syncUIWithEntitlements;
