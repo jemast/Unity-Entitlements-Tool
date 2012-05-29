@@ -257,11 +257,6 @@
     else
         [provisioningProfileCertificates removeAllObjects];
     
-    if (packagingCertificates == nil)
-        packagingCertificates = [NSMutableArray array];
-    else
-        [packagingCertificates removeAllObjects];
-    
     // Get provisioning profiles URL
     NSURL *libraryURL = [[[NSFileManager defaultManager] URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask] objectAtIndex:0];
     NSURL *profilesURL = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/MobileDevice/Provisioning Profiles", libraryURL.path] isDirectory:YES];
@@ -393,6 +388,12 @@
 }
 
 - (BOOL)updateInstallerProfileList:(NSError *__autoreleasing *)error {
+    // Make sure our arrays are ready and empty
+    if (packagingCertificates == nil)
+        packagingCertificates = [NSMutableArray array];
+    else
+        [packagingCertificates removeAllObjects];
+    
     // Clear list
     [self.installerCertificatePopUpButton removeAllItems];
     
@@ -420,9 +421,18 @@
     for (id object in items) {
         CFStringRef certificateNameRef;
         SecCertificateCopyCommonName((__bridge SecCertificateRef)object, &certificateNameRef);
-        NSString *certName = (__bridge_transfer NSString *)certificateNameRef;
-        if ([certName hasPrefix:@"3rd Party Mac Developer "])
-            [packagingCertificates addObject:certName];
+        
+        // Make sure we did get that name
+        if (certificateNameRef != nil) {
+            NSString *certName = (__bridge_transfer NSString *)certificateNameRef;
+            if (certName != nil) {
+                if ([certName isKindOfClass:[NSString class]]) {
+                    // Simple check to test if this is a valid Mac dev certificate
+                    if ([certName hasPrefix:@"3rd Party Mac Developer "])
+                        [packagingCertificates addObject:certName];
+                }
+            }
+        }
     }
     
     // No cert ? No need to open anything...
