@@ -420,10 +420,10 @@
     // Filter out Mac Dev certificates
     for (id object in items) {
         CFStringRef certificateNameRef;
-        SecCertificateCopyCommonName((__bridge SecCertificateRef)object, &certificateNameRef);
+        OSStatus result = SecCertificateCopyCommonName((__bridge SecCertificateRef)object, &certificateNameRef);
         
         // Make sure we did get that name
-        if (certificateNameRef != nil) {
+        if ((result == 0) && (certificateNameRef != nil)) {
             NSString *certName = (__bridge_transfer NSString *)certificateNameRef;
             if (certName != nil) {
                 if ([certName isKindOfClass:[NSString class]]) {
