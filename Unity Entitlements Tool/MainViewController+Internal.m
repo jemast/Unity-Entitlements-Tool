@@ -357,6 +357,49 @@
         [provisioningProfileAppIds addObject:profileAppId];
         [provisioningProfileCertificates addObject:(__bridge_transfer NSString *)certificateNameRef];
     }
+
+    // Look for Developer ID certificates (they are not tied to a profile)
+    // Search certificates
+    NSDictionary *query = [NSDictionary dictionaryWithObjectsAndKeys:
+                           kSecClassCertificate, kSecClass,
+                           kCFBooleanTrue, kSecReturnRef,
+                           kSecMatchLimitAll, kSecMatchLimit,
+                           kCFBooleanTrue, kSecAttrCanSign,
+                           nil];
+    
+    CFTypeRef attributes;
+    OSStatus status = SecItemCopyMatching((__bridge CFDictionaryRef)query, (CFTypeRef *)&attributes);
+    NSArray *items = (__bridge_transfer NSArray *)attributes;
+    
+    // Make sure we succeeded in fetching certs
+    if (status) {
+        if (error != nil)
+            *error = [NSError errorWithDomain:NSCocoaErrorDomain code:0 userInfo:[NSDictionary dictionaryWithObject:@"Can't search keychain." forKey:NSLocalizedDescriptionKey]];
+        
+        return NO;
+    }
+    
+    // Filter out Mac Dev certificates
+    for (id object in items) {
+        CFStringRef certificateNameRef;
+        OSStatus result = SecCertificateCopyCommonName((__bridge SecCertificateRef)object, &certificateNameRef);
+        
+        // Make sure we did get that name
+        if ((result == 0) && (certificateNameRef != nil)) {
+            NSString *certName = (__bridge_transfer NSString *)certificateNameRef;
+            if (certName != nil) {
+                if ([certName isKindOfClass:[NSString class]]) {
+                    // Simple check to test if this is a valid Mac dev certificate
+                    if ([certName hasPrefix:@"Developer ID Installer"] || [certName hasPrefix:@"Developer ID Application"]) {
+                        [provisioningProfilePaths addObject:@""];
+                        [provisioningProfileNames addObject:certName];
+                        [provisioningProfileAppIds addObject:@""];
+                        [provisioningProfileCertificates addObject:certName];
+                    }
+                }
+            }
+        }
+    }
     
     // No profile ? No need to open anything...
     if (provisioningProfileNames.count == 0) {
@@ -428,7 +471,7 @@
             if (certName != nil) {
                 if ([certName isKindOfClass:[NSString class]]) {
                     // Simple check to test if this is a valid Mac dev certificate
-                    if ([certName hasPrefix:@"3rd Party Mac Developer "])
+                    if ([certName hasPrefix:@"3rd Party Mac Developer "] || [certName hasPrefix:@"Developer ID Installer"] || [certName hasPrefix:@"Developer ID Application"])
                         [packagingCertificates addObject:certName];
                 }
             }
@@ -519,6 +562,26 @@
     if (provisioningProfilePath != nil) {
         if ([provisioningProfilePaths containsObject:provisioningProfilePath]) { // Do we have it locally ?
             NSInteger index = [provisioningProfilePaths indexOfObject:provisioningProfilePath];
+            [self.provisioningProfilePopUpButton selectItemAtIndex:index];
+            [self.provisioningProfileAppIdLabel setStringValue:[provisioningProfileAppIds objectAtIndex:index]];
+            [self.provisioningProfileCertificateLabel setStringValue:[provisioningProfileCertificates objectAtIndex:index]];
+            
+            // Update iCloud key-value store text field
+            [self.iCloudKeyValueStoreTextField setStringValue:[provisioningProfileAppIds objectAtIndex:index]];
+            
+            // Update iCloud container text field
+            [self.iCloudContainerTextField setStringValue:[provisioningProfileAppIds objectAtIndex:index]];
+            
+            // Mark we did find a valid profile
+            didFindValidProfile = YES;
+        } else {
+            // Mark we did find an invalid profile
+            didFindInvalidProfile = YES;
+        }
+    } else if (provisioningCertificate != nil) {
+        // We have Developer ID code signing
+        if ([provisioningProfileCertificates containsObject:provisioningCertificate]) { // Do we have it locally ?
+            NSInteger index = [provisioningProfileCertificates indexOfObject:provisioningCertificate];
             [self.provisioningProfilePopUpButton selectItemAtIndex:index];
             [self.provisioningProfileAppIdLabel setStringValue:[provisioningProfileAppIds objectAtIndex:index]];
             [self.provisioningProfileCertificateLabel setStringValue:[provisioningProfileCertificates objectAtIndex:index]];
@@ -658,7 +721,7 @@
     if (postProcessScriptHasPackaging) {
         self.packagingCheckbox.state = NSOnState;
     } else {
-        self.codeSignCheckbox.state = NSOffState;
+        self.packagingCheckbox.state = NSOffState;
     }
     
     
@@ -920,8 +983,10 @@
         postProcessScriptHasCodesign = NO;
         postProcessScriptHasPackaging = NO;
     } else {
+        NSString *provisioningProfileCopyCommand = ([provisioningProfilePath isEqualToString:@""] || !provisioningProfilePath) ? @"" : [NSString stringWithFormat:@"system(\"cp \\\"%@\\\" \\\"$EntitlementsPublishFile/Contents/embedded.provisionprofile\\\"\");\n    ", provisioningProfilePath];
+        
         // Prepare our perl operation string -- We will always embed provisioning profile so include this ; We will always update bundle identifier so include this as well
-        NSMutableString *perlOperationString = [NSMutableString stringWithFormat:@"\nmy $EntitlementsPublishFile = $ARGV[0];\nmy $EntitlementsPublishTarget = $ARGV[1];\nmy $EntitlementsPackageFile = $ARGV[0]; chop($EntitlementsPackageFile); chop($EntitlementsPackageFile); chop($EntitlementsPackageFile); $EntitlementsPackageFile = $EntitlementsPackageFile . 'pkg';\nif (($EntitlementsPublishTarget eq \"standaloneOSXIntel\") || ($EntitlementsPublishTarget eq \"standaloneOSXUniversal\")) {\n    system(\"cp \\\"%@\\\" \\\"$EntitlementsPublishFile/Contents/embedded.provisionprofile\\\"\");\n    system(\"defaults write \\\"$EntitlementsPublishFile/Contents/Info.plist\\\" \\\"CFBundleIdentifier\\\" -string \\\"%@\\\"\");\n    system(\"defaults write \\\"$EntitlementsPublishFile/Contents/Info.plist\\\" \\\"LSApplicationCategoryType\\\" -string \\\"%@\\\"\");", provisioningProfilePath, bundleIdentifier, applicationCategory];
+        NSMutableString *perlOperationString = [NSMutableString stringWithFormat:@"\nmy $EntitlementsPublishFile = $ARGV[0];\nmy $EntitlementsPublishTarget = $ARGV[1];\nmy $EntitlementsPackageFile = $ARGV[0]; chop($EntitlementsPackageFile); chop($EntitlementsPackageFile); chop($EntitlementsPackageFile); $EntitlementsPackageFile = $EntitlementsPackageFile . 'pkg';\nif (($EntitlementsPublishTarget eq \"standaloneOSXIntel\") || ($EntitlementsPublishTarget eq \"standaloneOSXUniversal\")) {\n    %@system(\"defaults write \\\"$EntitlementsPublishFile/Contents/Info.plist\\\" \\\"CFBundleIdentifier\\\" -string \\\"%@\\\"\");\n    system(\"defaults write \\\"$EntitlementsPublishFile/Contents/Info.plist\\\" \\\"LSApplicationCategoryType\\\" -string \\\"%@\\\"\");", provisioningProfileCopyCommand, bundleIdentifier, applicationCategory];
         
         // Add version number
         [perlOperationString appendFormat:@"\n    system(\"defaults write \\\"$EntitlementsPublishFile/Contents/Info.plist\\\" \\\"CFBundleVersion\\\" -string \\\"%@\\\"\");", versionNumber];
@@ -948,7 +1013,8 @@
         if (withPackaging == YES) {
             [perlOperationString appendFormat:@"\n    system(\"/usr/bin/productbuild --component \\\"$EntitlementsPublishFile\\\" /Applications --sign \\\"%@\\\" --product \\\"$EntitlementsPublishFile/Contents/Info.plist\\\" \\\"$EntitlementsPackageFile\\\"\");", packagingCertificate];
             postProcessScriptHasPackaging = YES;
-        }
+        } else
+            postProcessScriptHasPackaging = NO;
         
         // Append ending
         [perlOperationString appendString:@"\n}\n"];

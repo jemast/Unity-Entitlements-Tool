@@ -171,7 +171,7 @@
             // This block will allow easy early returns for errors opening project
             void (^couldNotOpenProject)(NSError *) = ^(NSError *error) {
                 // Invalid folder, alert and prevent open panel validation
-                NSAlert *alert = [NSAlert alertWithMessageText:@"Could Not Open Project" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:(error ? error.localizedDescription : @"Undefined error.")];
+                NSAlert *alert = [NSAlert alertWithMessageText:@"Could Not Open Project" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"Error : %@", (error ? error.localizedDescription : @"Undefined error.")];
                 [alert runModal];
                 
                 // Reset
@@ -230,25 +230,31 @@
     [self iCloudContainerTextFieldEdited:self.iCloudContainerTextField];
     
     // Check bundle identifer
-    if ([bundleIdentifier rangeOfString:@"*"].location != NSNotFound) {
-        // Alert and stop
-        NSAlert *alert = [NSAlert alertWithMessageText:@"Invalid Bundle Identifier" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"Bundle Identifier should not contain wildcard '*' character. Bundle Identifier should be in the form of com.company.name with a pattern matching the one of your provisioning profile."];
-        [alert runModal];        
-        return;
-    } else if ([bundleIdentifier isEqualToString:@""]) {
-        // Alert and stop
-        NSAlert *alert = [NSAlert alertWithMessageText:@"Invalid Bundle Identifier" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"Bundle Identifier should not be empty. Bundle Identifier should be in the form of com.company.name with a pattern matching the one of your provisioning profile."];
-        [alert runModal];        
-        return;
+    if (self.codeSignCheckbox.state == NSOnState) {
+        if ([bundleIdentifier rangeOfString:@"*"].location != NSNotFound) {
+            // Alert and stop
+            NSAlert *alert = [NSAlert alertWithMessageText:@"Invalid Bundle Identifier" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"Bundle Identifier should not contain wildcard '*' character. Bundle Identifier should be in the form of com.company.name with a pattern matching the one of your provisioning profile."];
+            [alert runModal];        
+            return;
+        } else if ([bundleIdentifier isEqualToString:@""]) {
+            // Alert and stop
+            NSAlert *alert = [NSAlert alertWithMessageText:@"Invalid Bundle Identifier" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"Bundle Identifier should not be empty. Bundle Identifier should be in the form of com.company.name with a pattern matching the one of your provisioning profile."];
+            [alert runModal];        
+            return;
+        }
     }
     
     // Check for wildcard in iCloud identifiers
-    if (([[entitlements objectForKey:@"com.apple.developer.ubiquity-kvstore-identifier"] rangeOfString:@"*"].location != NSNotFound)
-        || ([[[entitlements objectForKey:@"com.apple.developer.ubiquity-container-identifiers"] objectAtIndex:0] rangeOfString:@"*"].location != NSNotFound)) {
-        // Alert and stop
-        NSAlert *alert = [NSAlert alertWithMessageText:@"Invalid iCloud Identifiers" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"iCloud identifiers should not contain wildcard '*' character. iCloud identifiers should be in the form of AppID.com.company.name with AppID matching the one of your provisioning profile."];
-        [alert runModal];        
-        return;
+    if (self.entitlementsCheckbox.state == NSOnState) {
+        if ([entitlements objectForKey:@"com.apple.developer.ubiquity-kvstore-identifier"] != nil) {
+            if (([[entitlements objectForKey:@"com.apple.developer.ubiquity-kvstore-identifier"] rangeOfString:@"*"].location != NSNotFound)
+                || ([[[entitlements objectForKey:@"com.apple.developer.ubiquity-container-identifiers"] objectAtIndex:0] rangeOfString:@"*"].location != NSNotFound)) {
+                // Alert and stop
+                NSAlert *alert = [NSAlert alertWithMessageText:@"Invalid iCloud Identifiers" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"iCloud identifiers should not contain wildcard '*' character. iCloud identifiers should be in the form of AppID.com.company.name with AppID matching the one of your provisioning profile."];
+                [alert runModal];        
+                return;
+            }
+        }
     }
     
     // Edit post-process script
@@ -263,7 +269,8 @@
     [postProcessScript writeToURL:postProcessScriptURL atomically:YES encoding:NSUTF8StringEncoding error:&writeError];
     
     // Save entitlements
-    [[entitlements xmlData] writeToURL:entitlementsURL atomically:YES];
+    if (self.entitlementsCheckbox.state == NSOnState)
+        [[entitlements xmlData] writeToURL:entitlementsURL atomically:YES];
     
     // Update project status
     [self updateProjectStatus];
@@ -415,12 +422,21 @@
 }
 
 - (IBAction)iCloudKeyValueStoreTextFieldEdited:(id)sender {
-    [entitlements setObject:[sender stringValue] forKey:@"com.apple.application-identifier"];
-    [entitlements setObject:[sender stringValue] forKey:@"com.apple.developer.ubiquity-kvstore-identifier"];
+    if ([[sender stringValue] isEqualToString:@""]) {
+        [entitlements removeObjectForKey:@"com.apple.application-identifier"];
+        [entitlements removeObjectForKey:@"com.apple.developer.ubiquity-kvstore-identifier"];
+    } else {
+        [entitlements setObject:[sender stringValue] forKey:@"com.apple.application-identifier"];
+        [entitlements setObject:[sender stringValue] forKey:@"com.apple.developer.ubiquity-kvstore-identifier"];
+    }
 }
 
 - (IBAction)iCloudContainerTextFieldEdited:(id)sender {
-    [entitlements setObject:[NSArray arrayWithObject:[sender stringValue]] forKey:@"com.apple.developer.ubiquity-container-identifiers"];
+    if ([[sender stringValue] isEqualToString:@""]) {
+        [entitlements removeObjectForKey:@"com.apple.developer.ubiquity-container-identifiers"];
+    } else {
+        [entitlements setObject:[NSArray arrayWithObject:[sender stringValue]] forKey:@"com.apple.developer.ubiquity-container-identifiers"];
+    }
 }
 
 
