@@ -197,7 +197,7 @@
 		C7394D6B1483EA2C000BD730 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0440;
+				LastUpgradeCheck = 0450;
 			};
 			buildConfigurationList = C7394D6E1483EA2C000BD730 /* Build configuration list for PBXProject "Unity Entitlements Tool" */;
 			compatibilityVersion = "Xcode 3.2";

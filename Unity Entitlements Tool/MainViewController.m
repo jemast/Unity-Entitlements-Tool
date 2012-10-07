@@ -38,7 +38,7 @@
 
 @synthesize projectNameLabel, projectIconImageView, codeSignIconImageView, entitlementsIconImageView, sandboxingIconImageView, packagingIconImageView, pickProjectDirectoryButton, updateBuildPipelineButton, clearBuildPipelineButton;
 
-@synthesize codeSignBox, provisioningProfileAppIdLabel, provisioningProfileCertificateLabel, provisioningProfilePopUpButton, codeSignCheckbox, bundleIdentifierTextField, macAppStoreCategoryPopUpButton, versionNumberTextField, bundleGetInfoTextField, setCustomIconButton, unsetCustomIconButton, customIconImageWell;
+@synthesize codeSignBox, provisioningProfileAppIdLabel, provisioningProfilePopUpButton, provisioningProfileCertificatePopUpButton, codeSignCheckbox, bundleIdentifierTextField, macAppStoreCategoryPopUpButton, versionNumberTextField, bundleGetInfoTextField, setCustomIconButton, unsetCustomIconButton, customIconImageWell;
 
 @synthesize entitlementsBox, entitlementsCheckbox, iCloudContainerTextField, iCloudKeyValueStoreTextField;
 
@@ -269,8 +269,7 @@
     [postProcessScript writeToURL:postProcessScriptURL atomically:YES encoding:NSUTF8StringEncoding error:&writeError];
     
     // Save entitlements
-    if (self.entitlementsCheckbox.state == NSOnState)
-        [[entitlements xmlData] writeToURL:entitlementsURL atomically:YES];
+    [[entitlements xmlData] writeToURL:entitlementsURL atomically:YES];
     
     // Update project status
     [self updateProjectStatus];
@@ -324,34 +323,41 @@
 
 - (IBAction)provisioningProfilePicked:(id)sender {
     // Set the provisioning profile using the certificate name
-    provisioningCertificate = [provisioningProfileCertificates objectAtIndex:self.provisioningProfilePopUpButton.indexOfSelectedItem];
+    provisioningCertificate = [[provisioningProfileCertificates objectAtIndex:self.provisioningProfilePopUpButton.indexOfSelectedItem] objectAtIndex:0];
     provisioningProfilePath = [provisioningProfilePaths objectAtIndex:self.provisioningProfilePopUpButton.indexOfSelectedItem];
     
     // Update bundle identifier
     NSString *appId = [provisioningProfileAppIds objectAtIndex:self.provisioningProfilePopUpButton.indexOfSelectedItem];
-    NSRange appIdFirstPart = [appId rangeOfString:@"."];
-    if (appIdFirstPart.location != NSNotFound) {
-        NSString *strippedAppId = [appId substringFromIndex:(appIdFirstPart.location + appIdFirstPart.length)];
-        bundleIdentifier = [strippedAppId stringByReplacingOccurrencesOfString:@"*" withString:@""];
-    } else {
-        bundleIdentifier = @"";
-    }
-    [self.bundleIdentifierTextField setStringValue:bundleIdentifier];
+//    NSRange appIdFirstPart = [appId rangeOfString:@"."];
+//    if (appIdFirstPart.location != NSNotFound) {
+//        NSString *strippedAppId = [appId substringFromIndex:(appIdFirstPart.location + appIdFirstPart.length)];
+//        bundleIdentifier = [strippedAppId stringByReplacingOccurrencesOfString:@"*" withString:@""];
+//    } else {
+//        bundleIdentifier = @"";
+//    }
+//    [self.bundleIdentifierTextField setStringValue:bundleIdentifier];
     
-    // Update AppID & cert name
+    // Update AppID & cert list
     [self.provisioningProfileAppIdLabel setStringValue:appId];
-    [self.provisioningProfileCertificateLabel setStringValue:[provisioningProfileCertificates objectAtIndex:self.provisioningProfilePopUpButton.indexOfSelectedItem]];
+    [self.provisioningProfileCertificatePopUpButton removeAllItems];
+    [self.provisioningProfileCertificatePopUpButton addItemsWithTitles:[provisioningProfileCertificates objectAtIndex:self.provisioningProfilePopUpButton.indexOfSelectedItem]];
     
     // Update iCloud key-value store text field
-    [self.iCloudKeyValueStoreTextField setStringValue:[provisioningProfileAppIds objectAtIndex:self.provisioningProfilePopUpButton.indexOfSelectedItem]];
+    //[self.iCloudKeyValueStoreTextField setStringValue:[provisioningProfileAppIds objectAtIndex:self.provisioningProfilePopUpButton.indexOfSelectedItem]];
 
     // Update iCloud container text field
-    [self.iCloudContainerTextField setStringValue:[provisioningProfileAppIds objectAtIndex:self.provisioningProfilePopUpButton.indexOfSelectedItem]];
+    //[self.iCloudContainerTextField setStringValue:[provisioningProfileAppIds objectAtIndex:self.provisioningProfilePopUpButton.indexOfSelectedItem]];
     
     // Update entitlements immediately
-    [entitlements setObject:[self.iCloudKeyValueStoreTextField stringValue] forKey:@"com.apple.application-identifier"];
-    [entitlements setObject:[self.iCloudKeyValueStoreTextField stringValue] forKey:@"com.apple.developer.ubiquity-kvstore-identifier"];
-    [entitlements setObject:[NSArray arrayWithObject:[self.iCloudContainerTextField stringValue]] forKey:@"com.apple.developer.ubiquity-container-identifiers"];
+    //[entitlements setObject:[self.iCloudKeyValueStoreTextField stringValue] forKey:@"com.apple.application-identifier"];
+    //[entitlements setObject:[self.iCloudKeyValueStoreTextField stringValue] forKey:@"com.apple.developer.ubiquity-kvstore-identifier"];
+    //[entitlements setObject:[NSArray arrayWithObject:[self.iCloudContainerTextField stringValue]] forKey:@"com.apple.developer.ubiquity-container-identifiers"];
+}
+
+
+- (IBAction)provisioningProfileCertificatePicked:(id)sender {
+    // Update cert
+    provisioningCertificate = [[provisioningProfileCertificates objectAtIndex:self.provisioningProfilePopUpButton.indexOfSelectedItem] objectAtIndex:provisioningProfileCertificatePopUpButton.indexOfSelectedItem];
 }
 
 - (IBAction)bundleIdentifierTextFieldEdited:(id)sender {
@@ -407,7 +413,6 @@
     customIconPath = [[(NSImageView *)sender image] name];
 }
 
-
 //////////////////////////
 // Entitlements Actions //
 //////////////////////////
@@ -417,8 +422,15 @@
 - (IBAction)entitlementsCheckboxPressed:(id)sender {
     if (self.entitlementsCheckbox.state)
         [self setSandboxingBoxActive];
-    else
+    else {
         [self setSandboxingBoxInactive];
+
+        // No entitlements = no sandboxing
+        self.sandboxingCheckbox.state = NSOffState;
+    }
+    
+    // Fake this call to trigger some updates on the sandboxing side
+    [self sandboxingCheckboxPressed:self.sandboxingCheckbox];
 }
 
 - (IBAction)iCloudKeyValueStoreTextFieldEdited:(id)sender {
@@ -479,7 +491,7 @@
         [entitlements removeObjectForKey:@"com.apple.security.assets.music.read-write"];
         
         // Set any new object
-        switch (self.sbFileSystemAccessPopUpButton.indexOfSelectedItem) {
+        switch (self.sbMusicFolderAccessPopUpButton.indexOfSelectedItem) {
             case 1:
                 [entitlements setObject:[NSNumber numberWithBool:YES] forKey:@"com.apple.security.assets.music.read-only"];
                 break;
@@ -496,7 +508,7 @@
         [entitlements removeObjectForKey:@"com.apple.security.assets.movies.read-write"];
         
         // Set any new object
-        switch (self.sbFileSystemAccessPopUpButton.indexOfSelectedItem) {
+        switch (self.sbMoviesFolderAccessPopUpButton.indexOfSelectedItem) {
             case 1:
                 [entitlements setObject:[NSNumber numberWithBool:YES] forKey:@"com.apple.security.assets.movies.read-only"];
                 break;
@@ -513,7 +525,7 @@
         [entitlements removeObjectForKey:@"com.apple.security.assets.pictures.read-write"];
         
         // Set any new object
-        switch (self.sbFileSystemAccessPopUpButton.indexOfSelectedItem) {
+        switch (self.sbPicturesFolderAccesPopUpButton.indexOfSelectedItem) {
             case 1:
                 [entitlements setObject:[NSNumber numberWithBool:YES] forKey:@"com.apple.security.assets.pictures.read-only"];
                 break;

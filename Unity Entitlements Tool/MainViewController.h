@@ -46,6 +46,7 @@
     NSString *packagingCertificate;
     NSMutableDictionary *entitlements;
     BOOL postProcessScriptHasCodesign;
+    BOOL postProcessScriptHasEntitlements;
     BOOL postProcessScriptHasPackaging;
     
     NSMutableArray *provisioningProfilePaths;
@@ -88,10 +89,10 @@
 
 // Labels
 @property (unsafe_unretained) IBOutlet NSTextField *provisioningProfileAppIdLabel;
-@property (unsafe_unretained) IBOutlet NSTextField *provisioningProfileCertificateLabel;
 
 // Buttons
 @property (unsafe_unretained) IBOutlet NSPopUpButton *provisioningProfilePopUpButton;
+@property (unsafe_unretained) IBOutlet NSPopUpButton *provisioningProfileCertificatePopUpButton;
 @property (unsafe_unretained) IBOutlet NSPopUpButton *macAppStoreCategoryPopUpButton;
 @property (unsafe_unretained) IBOutlet NSButton *setCustomIconButton;
 @property (unsafe_unretained) IBOutlet NSButton *unsetCustomIconButton;
@@ -111,6 +112,7 @@
 // Actions
 - (IBAction)codeSignCheckboxPressed:(id)sender;
 - (IBAction)provisioningProfilePicked:(id)sender;
+- (IBAction)provisioningProfileCertificatePicked:(id)sender;
 - (IBAction)bundleIdentifierTextFieldEdited:(id)sender;
 - (IBAction)appStoreCategoryPicked:(id)sender;
 - (IBAction)versionNumberTextFieldEdited:(id)sender;

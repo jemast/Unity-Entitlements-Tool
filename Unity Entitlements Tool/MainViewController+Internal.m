@@ -176,16 +176,25 @@
                    customIconPath = [scriptSubstring substringToIndex:customIconEndRange.location];
                 }
             }
-
             
             // Attempt to retrieve certificate signature
-            NSRange codeSignBeginRange = [scriptString rangeOfString:@"/usr/bin/codesign --force --sign \\\""];
+            NSRange codeSignBeginRange = [scriptString rangeOfString:@"/usr/bin/codesign --force --timestamp=none --sign \\\""];
             if (codeSignBeginRange.location != NSNotFound) {
                 NSString *scriptSubstring = [scriptString substringFromIndex:(codeSignBeginRange.location + codeSignBeginRange.length)];
                 NSRange codeSignEndRange = [scriptSubstring rangeOfString:@"\\\""];
                 if (codeSignEndRange.location != NSNotFound) {
                     postProcessScriptHasCodesign = YES;
                     provisioningCertificate = [scriptSubstring substringToIndex:codeSignEndRange.location];
+                }
+            }
+            
+            // Attempt to retrieve if we had entitlements enabled
+            NSRange entitlementsBeginRange = [scriptString rangeOfString:@"\\\" --entitlements \\\""];
+            if (entitlementsBeginRange.location != NSNotFound) {
+                NSString *scriptSubstring = [scriptString substringFromIndex:(entitlementsBeginRange.location + entitlementsBeginRange.length)];
+                NSRange entitlementsEndRange = [scriptSubstring rangeOfString:@"\\\""];
+                if (entitlementsEndRange.location != NSNotFound) {
+                    postProcessScriptHasEntitlements = YES;
                 }
             }
             
@@ -337,17 +346,24 @@
             continue;
         
         // Make sure this profile has certificate data
-        NSData *certData = [[profileDictionary objectForKey:@"DeveloperCertificates"] objectAtIndex:0];
-        if ((certData == nil) || (![certData isKindOfClass:[NSData class]]))
+        NSData *firstCertData = [[profileDictionary objectForKey:@"DeveloperCertificates"] objectAtIndex:0];
+        if ((firstCertData == nil) || (![firstCertData isKindOfClass:[NSData class]]))
             continue;
         
-        SecCertificateRef certificate = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)certData);
-        CFStringRef certificateNameRef;
-        SecCertificateCopyCommonName(certificate, &certificateNameRef);
-        CFRelease(certificate);
+        // Populate all certificates associated with this profile
+        NSMutableArray *certificateList = [NSMutableArray arrayWithCapacity:[[profileDictionary objectForKey:@"DeveloperCertificates"] count]];
         
-        if (certificateNameRef == nil)
-            continue;
+        for (NSData *certData in [profileDictionary objectForKey:@"DeveloperCertificates"]) {
+            SecCertificateRef certificate = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)certData);
+            CFStringRef certificateNameRef;
+            SecCertificateCopyCommonName(certificate, &certificateNameRef);
+            CFRelease(certificate);
+        
+            if (certificateNameRef == nil)
+                continue;
+            
+            [certificateList addObject:(__bridge_transfer NSString *)certificateNameRef];
+        }
         
         //////////////////////////////////////////////////////////////////
         // That's a valid certificate, we can add it to our lists
@@ -355,7 +371,7 @@
         [provisioningProfilePaths addObject:url.path];
         [provisioningProfileNames addObject:profileName];
         [provisioningProfileAppIds addObject:profileAppId];
-        [provisioningProfileCertificates addObject:(__bridge_transfer NSString *)certificateNameRef];
+        [provisioningProfileCertificates addObject:certificateList];
     }
 
     // Look for Developer ID certificates (they are not tied to a profile)
@@ -394,7 +410,7 @@
                         [provisioningProfilePaths addObject:@""];
                         [provisioningProfileNames addObject:certName];
                         [provisioningProfileAppIds addObject:@""];
-                        [provisioningProfileCertificates addObject:certName];
+                        [provisioningProfileCertificates addObject:[NSArray arrayWithObject:certName]];
                     }
                 }
             }
@@ -425,7 +441,8 @@
     [self.provisioningProfilePopUpButton removeAllItems];
     [self.provisioningProfilePopUpButton addItemsWithTitles:provisioningProfileNames];
     [self.provisioningProfileAppIdLabel setStringValue:[provisioningProfileAppIds objectAtIndex:0]];
-    [self.provisioningProfileCertificateLabel setStringValue:[provisioningProfileCertificates objectAtIndex:0]];
+    [self.provisioningProfileCertificatePopUpButton removeAllItems];
+    [self.provisioningProfileCertificatePopUpButton addItemsWithTitles:[provisioningProfileCertificates objectAtIndex:0]];
     
     return YES;
 }
@@ -559,18 +576,22 @@
     // Do we have some provisioning profile loaded ?
     BOOL didFindValidProfile = NO;
     BOOL didFindInvalidProfile = NO;
-    if (provisioningProfilePath != nil) {
+    if (provisioningProfilePath != nil && provisioningCertificate != nil) {
         if ([provisioningProfilePaths containsObject:provisioningProfilePath]) { // Do we have it locally ?
             NSInteger index = [provisioningProfilePaths indexOfObject:provisioningProfilePath];
             [self.provisioningProfilePopUpButton selectItemAtIndex:index];
             [self.provisioningProfileAppIdLabel setStringValue:[provisioningProfileAppIds objectAtIndex:index]];
-            [self.provisioningProfileCertificateLabel setStringValue:[provisioningProfileCertificates objectAtIndex:index]];
+            
+            NSInteger certificateIndex = [[provisioningProfileCertificates objectAtIndex:index] indexOfObject:provisioningCertificate];
+            [self.provisioningProfileCertificatePopUpButton removeAllItems];
+            [self.provisioningProfileCertificatePopUpButton addItemsWithTitles:[provisioningProfileCertificates objectAtIndex:index]];
+            [self.provisioningProfileCertificatePopUpButton selectItemAtIndex:certificateIndex];
             
             // Update iCloud key-value store text field
-            [self.iCloudKeyValueStoreTextField setStringValue:[provisioningProfileAppIds objectAtIndex:index]];
+            //[self.iCloudKeyValueStoreTextField setStringValue:[provisioningProfileAppIds objectAtIndex:index]];
             
             // Update iCloud container text field
-            [self.iCloudContainerTextField setStringValue:[provisioningProfileAppIds objectAtIndex:index]];
+            //[self.iCloudContainerTextField setStringValue:[provisioningProfileAppIds objectAtIndex:index]];
             
             // Mark we did find a valid profile
             didFindValidProfile = YES;
@@ -580,17 +601,18 @@
         }
     } else if (provisioningCertificate != nil) {
         // We have Developer ID code signing
-        if ([provisioningProfileCertificates containsObject:provisioningCertificate]) { // Do we have it locally ?
-            NSInteger index = [provisioningProfileCertificates indexOfObject:provisioningCertificate];
+        if ([provisioningProfileCertificates containsObject:[NSArray arrayWithObject:provisioningCertificate]]) { // Do we have it locally ?
+            NSInteger index = [provisioningProfileCertificates indexOfObject:[NSArray arrayWithObject:provisioningCertificate]];
             [self.provisioningProfilePopUpButton selectItemAtIndex:index];
             [self.provisioningProfileAppIdLabel setStringValue:[provisioningProfileAppIds objectAtIndex:index]];
-            [self.provisioningProfileCertificateLabel setStringValue:[provisioningProfileCertificates objectAtIndex:index]];
+            [self.provisioningProfileCertificatePopUpButton removeAllItems];
+            [self.provisioningProfileCertificatePopUpButton addItemsWithTitles:[provisioningProfileCertificates objectAtIndex:index]];
             
             // Update iCloud key-value store text field
-            [self.iCloudKeyValueStoreTextField setStringValue:[provisioningProfileAppIds objectAtIndex:index]];
+            //[self.iCloudKeyValueStoreTextField setStringValue:[provisioningProfileAppIds objectAtIndex:index]];
             
             // Update iCloud container text field
-            [self.iCloudContainerTextField setStringValue:[provisioningProfileAppIds objectAtIndex:index]];
+            //[self.iCloudContainerTextField setStringValue:[provisioningProfileAppIds objectAtIndex:index]];
             
             // Mark we did find a valid profile
             didFindValidProfile = YES;
@@ -609,9 +631,10 @@
         // This obviously was not codesigned -- just pick our first available profile
         [self.provisioningProfilePopUpButton selectItemAtIndex:0];
         [self.provisioningProfileAppIdLabel setStringValue:[provisioningProfileAppIds objectAtIndex:0]];
-        [self.provisioningProfileCertificateLabel setStringValue:[provisioningProfileCertificates objectAtIndex:0]];
+        [self.provisioningProfileCertificatePopUpButton removeAllItems];
+        [self.provisioningProfileCertificatePopUpButton addItemsWithTitles:[provisioningProfileCertificates objectAtIndex:0]];
 
-        provisioningCertificate = [provisioningProfileCertificates objectAtIndex:0];
+        provisioningCertificate = [[provisioningProfileCertificates objectAtIndex:0] objectAtIndex:0];
         provisioningProfilePath = [provisioningProfilePaths objectAtIndex:0];
         
         // Update bundle identifier
@@ -662,7 +685,7 @@
     }
     
     // Sync entitlements UI
-    if (entitlements.count != 0) {
+    if (postProcessScriptHasEntitlements) {
         self.entitlementsCheckbox.state = NSOnState;
         [self setSandboxingBoxActive];
     } else {
@@ -744,6 +767,7 @@
     packagingCertificate = nil;
     entitlements = nil;
     postProcessScriptHasCodesign = NO;
+    postProcessScriptHasEntitlements = NO;
     postProcessScriptHasPackaging = NO;
     
     provisioningProfilePaths = nil;
@@ -775,6 +799,7 @@
     // Reset user modifiable UI elements
     [self.codeSignCheckbox setState:NSOffState];
     [self.provisioningProfilePopUpButton removeAllItems];
+    [self.provisioningProfileCertificatePopUpButton removeAllItems];
     [self.bundleIdentifierTextField setStringValue:@""];
     [self.macAppStoreCategoryPopUpButton selectItemAtIndex:0];
     [self.versionNumberTextField setStringValue:@""];
@@ -807,6 +832,7 @@
 - (void)setCodeSignBoxActive {
     [self.codeSignCheckbox setEnabled:YES];
     [self.provisioningProfilePopUpButton setEnabled:YES];
+    [self.provisioningProfileCertificatePopUpButton setEnabled:YES];
     [self.bundleIdentifierTextField setEnabled:YES];
     [self.macAppStoreCategoryPopUpButton setEnabled:YES];
     [self.versionNumberTextField setEnabled:YES];
@@ -831,6 +857,7 @@
     // Disable components
     [self.codeSignCheckbox setEnabled:NO];
     [self.provisioningProfilePopUpButton setEnabled:NO];
+    [self.provisioningProfileCertificatePopUpButton setEnabled:NO];
     [self.bundleIdentifierTextField setEnabled:NO];
     [self.macAppStoreCategoryPopUpButton setEnabled:NO];
     [self.versionNumberTextField setEnabled:NO];
@@ -981,13 +1008,23 @@
         
         // Mark as post process script as not having codesign
         postProcessScriptHasCodesign = NO;
+        postProcessScriptHasEntitlements = NO;
         postProcessScriptHasPackaging = NO;
     } else {
-        NSString *provisioningProfileCopyCommand = ([provisioningProfilePath isEqualToString:@""] || !provisioningProfilePath) ? @"" : [NSString stringWithFormat:@"system(\"cp \\\"%@\\\" \\\"$EntitlementsPublishFile/Contents/embedded.provisionprofile\\\"\");\n    ", provisioningProfilePath];
-        
-        // Prepare our perl operation string -- We will always embed provisioning profile so include this ; We will always update bundle identifier so include this as well
-        NSMutableString *perlOperationString = [NSMutableString stringWithFormat:@"\nmy $EntitlementsPublishFile = $ARGV[0];\nmy $EntitlementsPublishTarget = $ARGV[1];\nmy $EntitlementsPackageFile = $ARGV[0]; chop($EntitlementsPackageFile); chop($EntitlementsPackageFile); chop($EntitlementsPackageFile); $EntitlementsPackageFile = $EntitlementsPackageFile . 'pkg';\nif (($EntitlementsPublishTarget eq \"standaloneOSXIntel\") || ($EntitlementsPublishTarget eq \"standaloneOSXUniversal\")) {\n    %@system(\"defaults write \\\"$EntitlementsPublishFile/Contents/Info.plist\\\" \\\"CFBundleIdentifier\\\" -string \\\"%@\\\"\");\n    system(\"defaults write \\\"$EntitlementsPublishFile/Contents/Info.plist\\\" \\\"LSApplicationCategoryType\\\" -string \\\"%@\\\"\");", provisioningProfileCopyCommand, bundleIdentifier, applicationCategory];
-        
+        // Prepare our perl operation string
+        NSMutableString *perlOperationString = [NSMutableString stringWithString:@"\nmy $EntitlementsPublishFile = $ARGV[0];\nmy $EntitlementsPublishTarget = $ARGV[1];\nmy $EntitlementsPackageFile = $ARGV[0]; chop($EntitlementsPackageFile); chop($EntitlementsPackageFile); chop($EntitlementsPackageFile); $EntitlementsPackageFile = $EntitlementsPackageFile . 'pkg';\nif (($EntitlementsPublishTarget eq \"standaloneOSXIntel\") || ($EntitlementsPublishTarget eq \"standaloneOSXUniversal\")) {"];
+
+        // Embed provisioning profile if any (Developer IDs don't have profiles)
+        if (!([provisioningProfilePath isEqualToString:@""] || !provisioningProfilePath))
+            [perlOperationString appendFormat:@"\n    system(\"cp \\\"%@\\\" \\\"$EntitlementsPublishFile/Contents/embedded.provisionprofile\\\"\");", provisioningProfilePath];
+
+        // chmod bundle
+        [perlOperationString appendString:@"\n    system(\"chmod -R a+xr \\\"$EntitlementsPublishFile\\\"\");"];
+
+        // Add version number
+        [perlOperationString appendFormat:@"\n    system(\"defaults write \\\"$EntitlementsPublishFile/Contents/Info.plist\\\" \\\"CFBundleIdentifier\\\" -string \\\"%@\\\"\");", bundleIdentifier];
+        [perlOperationString appendFormat:@"\n    system(\"defaults write \\\"$EntitlementsPublishFile/Contents/Info.plist\\\" \\\"LSApplicationCategoryType\\\" -string \\\"%@\\\"\");", applicationCategory];
+
         // Add version number
         [perlOperationString appendFormat:@"\n    system(\"defaults write \\\"$EntitlementsPublishFile/Contents/Info.plist\\\" \\\"CFBundleVersion\\\" -string \\\"%@\\\"\");", versionNumber];
         [perlOperationString appendFormat:@"\n    system(\"defaults write \\\"$EntitlementsPublishFile/Contents/Info.plist\\\" \\\"CFBundleShortVersionString\\\" -string \\\"%@\\\"\");", versionNumber];
@@ -1000,14 +1037,18 @@
         if ((customIconPath != nil) && ! [customIconPath isEqualToString:@""])
             [perlOperationString appendFormat:@"\n    system(\"cp \\\"%@\\\" \\\"$EntitlementsPublishFile/Contents/Resources/UnityPlayer.icns\\\"\");", customIconPath];
         
-        // chmod bundle
-        [perlOperationString appendString:@"\n    system(\"chmod -R a+xr \\\"$EntitlementsPublishFile\\\"\");"];
+        
+        // Mac OS 10.8.2 Fix
+        [perlOperationString appendString:@"\n    system(\"export CODESIGN_ALLOCATE=\\\"/Applications/Xcode.app/Contents/Developer/usr/bin/codesign_allocate\\\"\");"];
         
         // Do we want entitlements or not?
-        if (withEntitlements == YES)
-            [perlOperationString appendFormat:@"\n    system(\"/usr/bin/codesign --force --sign \\\"%@\\\" --entitlements \\\"%@\\\" \\\"$EntitlementsPublishFile\\\"\");", provisioningCertificate, entitlementsURL.path];
-        else
-            [perlOperationString appendFormat:@"\n    system(\"/usr/bin/codesign --force --sign \\\"%@\\\" \\\"$EntitlementsPublishFile\\\"\");", provisioningCertificate];
+        if (withEntitlements == YES) {
+            [perlOperationString appendFormat:@"\n    system(\"/usr/bin/codesign --force --timestamp=none --sign \\\"%@\\\" --entitlements \\\"%@\\\" \\\"$EntitlementsPublishFile\\\"\");", provisioningCertificate, entitlementsURL.path];
+            postProcessScriptHasEntitlements = YES;
+        } else {
+            [perlOperationString appendFormat:@"\n    system(\"/usr/bin/codesign --force --timestamp=none --sign \\\"%@\\\" \\\"$EntitlementsPublishFile\\\"\");", provisioningCertificate];
+            postProcessScriptHasEntitlements = NO;
+        }
         
         // Do we want packaging?
         if (withPackaging == YES) {
