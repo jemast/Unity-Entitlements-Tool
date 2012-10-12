@@ -40,9 +40,9 @@
 
 @synthesize codeSignBox, provisioningProfileAppIdLabel, provisioningProfilePopUpButton, provisioningProfileCertificatePopUpButton, codeSignCheckbox, bundleIdentifierTextField, macAppStoreCategoryPopUpButton, versionNumberTextField, bundleGetInfoTextField, setCustomIconButton, unsetCustomIconButton, customIconImageWell;
 
-@synthesize entitlementsBox, entitlementsCheckbox, iCloudContainerTextField, iCloudKeyValueStoreTextField;
+@synthesize entitlementsBox, entitlementsCheckbox, entitlementsApplicationIdentifierTextField, iCloudContainerTextField, iCloudKeyValueStoreTextField;
 
-@synthesize sandboxingBox, sandboxingCheckbox, sbAllowDownloadsFolderAccessCheckbox, sbAllowIncomingNetworkConnectionsCheckbox, sbAllowOutgoingNetworkConnectionsCheckbox, sbAllowCameraAccessCheckbox, sbAllowMicrophoneAccessCheckbox, sbAllowUSBAccessCheckbox, sbAllowPrintingCheckbox, sbAllowAddressBookDataAccessCheckbox, sbAllowLocationServicesAccessCheckbox, sbAllowCalendarDataAccessCheckbox, sbFileSystemAccessPopUpButton, sbMusicFolderAccessPopUpButton, sbMoviesFolderAccessPopUpButton, sbPicturesFolderAccesPopUpButton;
+@synthesize sandboxingBox, sandboxingCheckbox, sbAllowIncomingNetworkConnectionsCheckbox, sbAllowOutgoingNetworkConnectionsCheckbox, sbAllowCameraAccessCheckbox, sbAllowMicrophoneAccessCheckbox, sbAllowUSBAccessCheckbox, sbAllowPrintingCheckbox, sbAllowAddressBookDataAccessCheckbox, sbAllowLocationServicesAccessCheckbox, sbAllowCalendarDataAccessCheckbox, sbFileSystemAccessPopUpButton, sbMusicFolderAccessPopUpButton, sbMoviesFolderAccessPopUpButton, sbPicturesFolderAccesPopUpButton, sbDownloadsFolderAccessPopUpButton;
 
 @synthesize packagingBox, packagingCheckbox, installerCertificatePopUpButton;
 
@@ -226,6 +226,7 @@
     [self bundleIdentifierTextFieldEdited:self.bundleIdentifierTextField];
     [self versionNumberTextFieldEdited:self.versionNumberTextField];
     [self bundleGetInfoTextFieldEdited:self.bundleGetInfoTextField];
+    [self entitlementsApplicationIdentifierTextFieldEdited:self.entitlementsApplicationIdentifierTextField];
     [self iCloudKeyValueStoreTextFieldEdited:self.iCloudKeyValueStoreTextField];
     [self iCloudContainerTextFieldEdited:self.iCloudContainerTextField];
     
@@ -433,12 +434,19 @@
     [self sandboxingCheckboxPressed:self.sandboxingCheckbox];
 }
 
-- (IBAction)iCloudKeyValueStoreTextFieldEdited:(id)sender {
+
+- (IBAction)entitlementsApplicationIdentifierTextFieldEdited:(id)sender {
     if ([[sender stringValue] isEqualToString:@""]) {
         [entitlements removeObjectForKey:@"com.apple.application-identifier"];
-        [entitlements removeObjectForKey:@"com.apple.developer.ubiquity-kvstore-identifier"];
     } else {
         [entitlements setObject:[sender stringValue] forKey:@"com.apple.application-identifier"];
+    }
+}
+
+- (IBAction)iCloudKeyValueStoreTextFieldEdited:(id)sender {
+    if ([[sender stringValue] isEqualToString:@""]) {
+        [entitlements removeObjectForKey:@"com.apple.developer.ubiquity-kvstore-identifier"];
+    } else {
         [entitlements setObject:[sender stringValue] forKey:@"com.apple.developer.ubiquity-kvstore-identifier"];
     }
 }
@@ -536,18 +544,30 @@
             default:
                 break;
         }
+    } else if (sender == self.sbDownloadsFolderAccessPopUpButton) {
+        // Clear first
+        [entitlements removeObjectForKey:@"com.apple.security.files.downloads.read-only"];
+        [entitlements removeObjectForKey:@"com.apple.security.files.downloads.read-write"];
+        
+        // Set any new object
+        switch (self.sbDownloadsFolderAccessPopUpButton.indexOfSelectedItem) {
+            case 1:
+                [entitlements setObject:[NSNumber numberWithBool:YES] forKey:@"com.apple.security.files.downloads.read-only"];
+                break;
+            case 2:
+                [entitlements setObject:[NSNumber numberWithBool:YES] forKey:@"com.apple.security.files.downloads.read-write"];
+                break;
+                
+            default:
+                break;
+        }
     }
 }
 
 - (IBAction)sandboxingOptionCheckboxPressed:(id)sender {
     // Just pass any checkbox change to our entitlements dictionary
 
-    if (sender == self.sbAllowDownloadsFolderAccessCheckbox) {
-        if (self.sbAllowDownloadsFolderAccessCheckbox.state)
-            [entitlements setObject:[NSNumber numberWithBool:YES] forKey:@"com.apple.security.files.downloads.read-write"];
-        else
-            [entitlements removeObjectForKey:@"com.apple.security.files.downloads.read-write"];
-    } else if (sender == self.sbAllowIncomingNetworkConnectionsCheckbox) {
+    if (sender == self.sbAllowIncomingNetworkConnectionsCheckbox) {
         if (self.sbAllowIncomingNetworkConnectionsCheckbox.state)
             [entitlements setObject:[NSNumber numberWithBool:YES] forKey:@"com.apple.security.network.server"];
         else

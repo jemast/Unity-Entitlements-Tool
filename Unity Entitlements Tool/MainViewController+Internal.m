@@ -649,10 +649,10 @@
         [self.bundleIdentifierTextField setStringValue:bundleIdentifier];
         
         // Update iCloud key-value store text field
-        [self.iCloudKeyValueStoreTextField setStringValue:[provisioningProfileAppIds objectAtIndex:0]];
+        //[self.iCloudKeyValueStoreTextField setStringValue:[provisioningProfileAppIds objectAtIndex:0]];
         
         // Update iCloud container text field
-        [self.iCloudContainerTextField setStringValue:[provisioningProfileAppIds objectAtIndex:0]];
+        //[self.iCloudContainerTextField setStringValue:[provisioningProfileAppIds objectAtIndex:0]];
     }
     
     // Do we have packaging certificate loaded?
@@ -692,6 +692,10 @@
         self.entitlementsCheckbox.state = NSOffState;
         [self setSandboxingBoxInactive];
     }
+    
+    if ([entitlements objectForKey:@"com.apple.application-identifier"])
+        [self.entitlementsApplicationIdentifierTextField setStringValue:[entitlements objectForKey:@"com.apple.application-identifier"]];
+        
     if ([entitlements objectForKey:@"com.apple.developer.ubiquity-kvstore-identifier"])
         [self.iCloudKeyValueStoreTextField setStringValue:[entitlements objectForKey:@"com.apple.developer.ubiquity-kvstore-identifier"]];
     
@@ -708,7 +712,7 @@
     else
         [self.sbFileSystemAccessPopUpButton selectItemAtIndex:0];
     
-    [self.sbAllowDownloadsFolderAccessCheckbox setState:(([[entitlements objectForKey:@"com.apple.security.files.downloads.read-write"] boolValue] == YES) ? NSOnState : NSOffState)];
+    
     [self.sbAllowIncomingNetworkConnectionsCheckbox setState:(([[entitlements objectForKey:@"com.apple.security.network.server"] boolValue] == YES) ? NSOnState : NSOffState)];
     [self.sbAllowOutgoingNetworkConnectionsCheckbox setState:(([[entitlements objectForKey:@"com.apple.security.network.client"] boolValue] == YES) ? NSOnState : NSOffState)];
     [self.sbAllowCameraAccessCheckbox setState:(([[entitlements objectForKey:@"com.apple.security.device.camera"] boolValue] == YES) ? NSOnState : NSOffState)];
@@ -739,6 +743,13 @@
         [self.sbPicturesFolderAccesPopUpButton selectItemAtIndex:1];
     else
         [self.sbPicturesFolderAccesPopUpButton selectItemAtIndex:0];
+    
+    if ([[entitlements objectForKey:@"com.apple.security.files.downloads.read-write"] boolValue] == YES)
+        [self.sbDownloadsFolderAccessPopUpButton selectItemAtIndex:2];
+    else if ([[entitlements objectForKey:@"com.apple.security.files.downloads.read-only"] boolValue] == YES)
+        [self.sbDownloadsFolderAccessPopUpButton selectItemAtIndex:1];
+    else
+        [self.sbDownloadsFolderAccessPopUpButton selectItemAtIndex:0];
     
     // Sync packaging UI
     if (postProcessScriptHasPackaging) {
@@ -806,12 +817,12 @@
     [self.bundleGetInfoTextField setStringValue:@""];
     
     [self.entitlementsCheckbox setState:NSOffState];
+    [self.entitlementsApplicationIdentifierTextField setStringValue:@""];
     [self.iCloudKeyValueStoreTextField setStringValue:@""];
     [self.iCloudContainerTextField setStringValue:@""];
     
     [self.sandboxingCheckbox setState:NSOffState];
     [self.sbFileSystemAccessPopUpButton selectItemAtIndex:0];
-    [self.sbAllowDownloadsFolderAccessCheckbox setState:NSOffState];
     [self.sbAllowIncomingNetworkConnectionsCheckbox setState:NSOffState];
     [self.sbAllowOutgoingNetworkConnectionsCheckbox setState:NSOffState];
     [self.sbAllowCameraAccessCheckbox setState:NSOffState];
@@ -824,6 +835,7 @@
     [self.sbMusicFolderAccessPopUpButton selectItemAtIndex:0];
     [self.sbMoviesFolderAccessPopUpButton selectItemAtIndex:0];
     [self.sbPicturesFolderAccesPopUpButton selectItemAtIndex:0];
+    [self.sbDownloadsFolderAccessPopUpButton selectItemAtIndex:0];
     
     [self.packagingCheckbox setState:NSOffState];
     [self.installerCertificatePopUpButton selectItemAtIndex:0];
@@ -880,6 +892,7 @@
 - (void)setEntitlementsBoxActive {
     // Enable components
     [self.entitlementsCheckbox setEnabled:YES];
+    [self.entitlementsApplicationIdentifierTextField setEnabled:YES];
     [self.iCloudKeyValueStoreTextField setEnabled:YES];
     [self.iCloudContainerTextField setEnabled:YES];
     
@@ -897,6 +910,7 @@
 - (void)setEntitlementsBoxInactive {
     // Disable components
     [self.entitlementsCheckbox setEnabled:NO];
+    [self.entitlementsApplicationIdentifierTextField setEnabled:NO];
     [self.iCloudKeyValueStoreTextField setEnabled:NO];
     [self.iCloudContainerTextField setEnabled:NO];
     
@@ -914,7 +928,6 @@
     // Enable components
     [self.sandboxingCheckbox setEnabled:YES];
     [self.sbFileSystemAccessPopUpButton setEnabled:YES];
-    [self.sbAllowDownloadsFolderAccessCheckbox setEnabled:YES];
     [self.sbAllowIncomingNetworkConnectionsCheckbox setEnabled:YES];
     [self.sbAllowOutgoingNetworkConnectionsCheckbox setEnabled:YES];
     [self.sbAllowCameraAccessCheckbox setEnabled:YES];
@@ -927,6 +940,7 @@
     [self.sbMusicFolderAccessPopUpButton setEnabled:YES];
     [self.sbMoviesFolderAccessPopUpButton setEnabled:YES];
     [self.sbPicturesFolderAccesPopUpButton setEnabled:YES];
+    [self.sbDownloadsFolderAccessPopUpButton setEnabled:YES];
     
     // Dark out all labels
     // No IBOutletCollection ? No problem...
@@ -939,7 +953,6 @@
     // Disable components
     [self.sandboxingCheckbox setEnabled:NO];
     [self.sbFileSystemAccessPopUpButton setEnabled:NO];
-    [self.sbAllowDownloadsFolderAccessCheckbox setEnabled:NO];
     [self.sbAllowIncomingNetworkConnectionsCheckbox setEnabled:NO];
     [self.sbAllowOutgoingNetworkConnectionsCheckbox setEnabled:NO];
     [self.sbAllowCameraAccessCheckbox setEnabled:NO];
@@ -952,6 +965,7 @@
     [self.sbMusicFolderAccessPopUpButton setEnabled:NO];
     [self.sbMoviesFolderAccessPopUpButton setEnabled:NO];
     [self.sbPicturesFolderAccesPopUpButton setEnabled:NO];
+    [self.sbDownloadsFolderAccessPopUpButton setEnabled:NO];
     
     // Grey out all labels
     // No IBOutletCollection ? No problem...
@@ -1018,8 +1032,8 @@
         if (!([provisioningProfilePath isEqualToString:@""] || !provisioningProfilePath))
             [perlOperationString appendFormat:@"\n    system(\"cp \\\"%@\\\" \\\"$EntitlementsPublishFile/Contents/embedded.provisionprofile\\\"\");", provisioningProfilePath];
 
-        // chmod bundle
-        [perlOperationString appendString:@"\n    system(\"chmod -R a+xr \\\"$EntitlementsPublishFile\\\"\");"];
+        // chmod bundle so we have full access
+        [perlOperationString appendString:@"\n    system(\"/bin/chmod -R a+rwx \\\"$EntitlementsPublishFile\\\"\");"];
 
         // Add version number
         [perlOperationString appendFormat:@"\n    system(\"defaults write \\\"$EntitlementsPublishFile/Contents/Info.plist\\\" \\\"CFBundleIdentifier\\\" -string \\\"%@\\\"\");", bundleIdentifier];
@@ -1037,7 +1051,12 @@
         if ((customIconPath != nil) && ! [customIconPath isEqualToString:@""])
             [perlOperationString appendFormat:@"\n    system(\"cp \\\"%@\\\" \\\"$EntitlementsPublishFile/Contents/Resources/UnityPlayer.icns\\\"\");", customIconPath];
         
+        // set owner & group
+        [perlOperationString appendFormat:@"\n    system(\"/usr/sbin/chown -RH \\\"%@:staff\\\" \\\"$EntitlementsPublishFile\\\"\");", NSUserName()];
         
+        // chmod again for final permissions
+        [perlOperationString appendString:@"\n    system(\"/bin/chmod -RH u+w,go-w,a+rX \\\"$EntitlementsPublishFile\\\"\");"];
+                
         // Mac OS 10.8.2 Fix
         [perlOperationString appendString:@"\n    system(\"export CODESIGN_ALLOCATE=\\\"/Applications/Xcode.app/Contents/Developer/usr/bin/codesign_allocate\\\"\");"];
         

@@ -132,11 +132,13 @@
 @property (unsafe_unretained) IBOutlet NSButton *entitlementsCheckbox;
 
 // Text fields
+@property (unsafe_unretained) IBOutlet NSTextField *entitlementsApplicationIdentifierTextField;
 @property (unsafe_unretained) IBOutlet NSTextField *iCloudKeyValueStoreTextField;
 @property (unsafe_unretained) IBOutlet NSTextField *iCloudContainerTextField;
 
 // Actions
 - (IBAction)entitlementsCheckboxPressed:(id)sender;
+- (IBAction)entitlementsApplicationIdentifierTextFieldEdited:(id)sender;
 - (IBAction)iCloudKeyValueStoreTextFieldEdited:(id)sender;
 - (IBAction)iCloudContainerTextFieldEdited:(id)sender;
 
@@ -150,7 +152,6 @@
 // Checkboxes
 @property (unsafe_unretained) IBOutlet NSButton *sandboxingCheckbox;
 
-@property (unsafe_unretained) IBOutlet NSButton *sbAllowDownloadsFolderAccessCheckbox;
 @property (unsafe_unretained) IBOutlet NSButton *sbAllowIncomingNetworkConnectionsCheckbox;
 @property (unsafe_unretained) IBOutlet NSButton *sbAllowOutgoingNetworkConnectionsCheckbox;
 @property (unsafe_unretained) IBOutlet NSButton *sbAllowCameraAccessCheckbox;
@@ -166,6 +167,7 @@
 @property (unsafe_unretained) IBOutlet NSPopUpButton *sbMusicFolderAccessPopUpButton;
 @property (unsafe_unretained) IBOutlet NSPopUpButton *sbMoviesFolderAccessPopUpButton;
 @property (unsafe_unretained) IBOutlet NSPopUpButton *sbPicturesFolderAccesPopUpButton;
+@property (unsafe_unretained) IBOutlet NSPopUpButton *sbDownloadsFolderAccessPopUpButton;
 
 // Actions
 - (IBAction)sandboxingCheckboxPressed:(id)sender;
