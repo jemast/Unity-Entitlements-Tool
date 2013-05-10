@@ -272,6 +272,9 @@
     // Save entitlements
     [[entitlements xmlData] writeToURL:entitlementsURL atomically:YES];
     
+    // Save resource rules
+    //[@"<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\"><plist version=\"1.0\"><dict><key>rules</key><dict><key>^Resources/</key><true/><key>^Resources/.*\\.lproj/</key><dict><key>omit</key><true/><key>weight</key><real>10</real></dict><key>^Plugins/</key><dict><key>optional</key><true/><key>weight</key><real>30</real></dict><key>^version.plist$</key><true/></dict></dict></plist>" writeToURL:resourceRulesURL atomically:YES encoding:NSUTF8StringEncoding error:&writeError];
+    
     // Update project status
     [self updateProjectStatus];
 }

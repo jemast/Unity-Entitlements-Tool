@@ -241,6 +241,9 @@
             entitlements = [NSMutableDictionary dictionary];
     }
     
+    // Initialize resource rules URL
+    //resourceRulesURL = [projectURL URLByAppendingPathComponent:@"Assets/Editor/ResourceRules.plist" isDirectory:NO];
+    
     return YES;
 }
 
@@ -488,7 +491,7 @@
             if (certName != nil) {
                 if ([certName isKindOfClass:[NSString class]]) {
                     // Simple check to test if this is a valid Mac dev certificate
-                    if ([certName hasPrefix:@"3rd Party Mac Developer "] || [certName hasPrefix:@"Developer ID Installer"] || [certName hasPrefix:@"Developer ID Application"])
+                    if ([certName hasPrefix:@"3rd Party Mac Developer "] || [certName hasPrefix:@"Mac Developer"] || [certName hasPrefix:@"Developer ID Installer"] || [certName hasPrefix:@"Developer ID Application"])
                         [packagingCertificates addObject:certName];
                 }
             }
@@ -768,6 +771,7 @@
     projectURL = nil;
     postProcessScriptURL = nil;
     entitlementsURL = nil;
+    //resourceRulesURL = nil;
     
     bundleIdentifier = nil;
     applicationCategory = nil;
@@ -1051,6 +1055,9 @@
         if ((customIconPath != nil) && ! [customIconPath isEqualToString:@""])
             [perlOperationString appendFormat:@"\n    system(\"cp \\\"%@\\\" \\\"$EntitlementsPublishFile/Contents/Resources/UnityPlayer.icns\\\"\");", customIconPath];
         
+        // Create CodeResources file
+        //[perlOperationString appendString:@"\n    system(\"echo '<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"?><!DOCTYPE plist PUBLIC \\\"-//Apple//DTD PLIST 1.0//EN\\\" \\\"http://www.apple.com/DTDs/PropertyList-1.0.dtd\\\"><plist version=\\\"1.0\\\"><dict><key>rules</key><dict><key>^Plugins/</key><dict><key>optional</key><true/><key>weight</key><real>30</real><dict></dict></dict></plist>' > \\\"$EntitlementsPublishFile/Contents/ResourceRules.plist\\\" \");"];
+
         // set owner & group
         [perlOperationString appendFormat:@"\n    system(\"/usr/sbin/chown -RH \\\"%@:staff\\\" \\\"$EntitlementsPublishFile\\\"\");", NSUserName()];
         
@@ -1058,13 +1065,19 @@
         [perlOperationString appendString:@"\n    system(\"/bin/chmod -RH u+w,go-w,a+rX \\\"$EntitlementsPublishFile\\\"\");"];
                 
         // Mac OS 10.8.2 Fix
-        [perlOperationString appendString:@"\n    system(\"export CODESIGN_ALLOCATE=\\\"/Applications/Xcode.app/Contents/Developer/usr/bin/codesign_allocate\\\"\");"];
+        [perlOperationString appendString:@"\n    system(\"export CODESIGN_ALLOCATE=\\\"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/codesign_allocate\\\"\");"];
+        //[perlOperationString appendString:@"\n    $ENV{'CODESIGN_ALLOCATE'} = '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/codesign_allocate';"];
+        
+        // Sign plugins
+        [perlOperationString appendString:@"\n    recursiveCodesign(\"$EntitlementsPublishFile/Contents/Plugins\");"];
         
         // Do we want entitlements or not?
         if (withEntitlements == YES) {
+            //[perlOperationString appendFormat:@"\n    system(\"/usr/bin/codesign --force --timestamp=none --sign \\\"%@\\\" --resource-rules \\\"%@\\\" --entitlements \\\"%@\\\" \\\"$EntitlementsPublishFile\\\"\");", provisioningCertificate, resourceRulesURL.path, entitlementsURL.path];
             [perlOperationString appendFormat:@"\n    system(\"/usr/bin/codesign --force --timestamp=none --sign \\\"%@\\\" --entitlements \\\"%@\\\" \\\"$EntitlementsPublishFile\\\"\");", provisioningCertificate, entitlementsURL.path];
             postProcessScriptHasEntitlements = YES;
         } else {
+            //[perlOperationString appendFormat:@"\n    system(\"/usr/bin/codesign --force --timestamp=none --sign \\\"%@\\\" --resource-rules \\\"%@\\\" \\\"$EntitlementsPublishFile\\\"\");", provisioningCertificate, resourceRulesURL.path];
             [perlOperationString appendFormat:@"\n    system(\"/usr/bin/codesign --force --timestamp=none --sign \\\"%@\\\" \\\"$EntitlementsPublishFile\\\"\");", provisioningCertificate];
             postProcessScriptHasEntitlements = NO;
         }
@@ -1078,6 +1091,9 @@
         
         // Append ending
         [perlOperationString appendString:@"\n}\n"];
+        
+        // Append recursive codesign function
+        [perlOperationString appendFormat:@"\nsub recursiveCodesign {\n    my $dirName = shift;\n    opendir my($dh), $dirName or die \"Couldn't open dir '$dirName'\";\n    my @files = readdir($dh);\n    closedir $dh;\n    foreach my $currentFile (@files) {\n        next if $currentFile =~ /^\\.{1,2}$/;\n        if ( lc($currentFile) =~ /.bundle$/ or lc($currentFile) =~ /.dylib$/ ) {\n            system(\"/usr/bin/codesign --force --timestamp=none --sign \\\"%@\\\" \\\"$dirName/$currentFile\\\"\");\n        }\n        if (-d \"$dirName/$currentFile\") {\n            recursiveCodesign(\"$dirName/$currentFile\");\n        }\n    }\n}\n", provisioningCertificate];
         
         // Check wether we already had our scripting stuff
         NSRange beginRange = [script rangeOfString:@"#BEGIN APPLY ENTITLEMENTS"];

@@ -35,6 +35,7 @@
     NSURL *projectURL;
     NSURL *postProcessScriptURL;
     NSURL *entitlementsURL;
+    //NSURL *resourceRulesURL;
     
     NSString *bundleIdentifier;
     NSString *applicationCategory;
