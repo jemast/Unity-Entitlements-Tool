@@ -247,14 +247,12 @@
     
     // Check for wildcard in iCloud identifiers
     if (self.entitlementsCheckbox.state == NSOnState) {
-        if ([entitlements objectForKey:@"com.apple.developer.ubiquity-kvstore-identifier"] != nil) {
-            if (([[entitlements objectForKey:@"com.apple.developer.ubiquity-kvstore-identifier"] rangeOfString:@"*"].location != NSNotFound)
-                || ([[[entitlements objectForKey:@"com.apple.developer.ubiquity-container-identifiers"] objectAtIndex:0] rangeOfString:@"*"].location != NSNotFound)) {
-                // Alert and stop
-                NSAlert *alert = [NSAlert alertWithMessageText:@"Invalid iCloud Identifiers" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"iCloud identifiers should not contain wildcard '*' character. iCloud identifiers should be in the form of AppID.com.company.name with AppID matching the one of your provisioning profile."];
-                [alert runModal];        
-                return;
-            }
+        if (([entitlements objectForKey:@"com.apple.developer.ubiquity-kvstore-identifier"] != nil && ([[entitlements objectForKey:@"com.apple.developer.ubiquity-kvstore-identifier"] rangeOfString:@"*"].location != NSNotFound))
+            || ([entitlements objectForKey:@"com.apple.developer.ubiquity-container-identifiers"] != nil && ([[[entitlements objectForKey:@"com.apple.developer.ubiquity-container-identifiers"] objectAtIndex:0] rangeOfString:@"*"].location != NSNotFound))) {
+            // Alert and stop
+            NSAlert *alert = [NSAlert alertWithMessageText:@"Invalid iCloud Identifiers" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"iCloud identifiers should not contain wildcard '*' character. iCloud identifiers should be in the form of AppID.com.company.name with AppID matching the one of your provisioning profile."];
+            [alert runModal];
+            return;
         }
     }
     
