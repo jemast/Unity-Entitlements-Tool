@@ -612,7 +612,7 @@
         if (self.sbAllowCalendarDataAccessCheckbox.state)
             [entitlements setObject:[NSNumber numberWithBool:YES] forKey:@"com.apple.security.personal-information.calendars"];
         else
-            [entitlements removeObjectForKey:@"com.apple.security.personal-information.calendar"];
+            [entitlements removeObjectForKey:@"com.apple.security.personal-information.calendars"];
     }
 }
 
