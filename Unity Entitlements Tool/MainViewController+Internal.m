@@ -1093,7 +1093,7 @@
         [perlOperationString appendString:@"\n}\n"];
         
         // Append recursive codesign function
-        [perlOperationString appendFormat:@"\nsub recursiveCodesign {\n    my $dirName = shift;\n    opendir my($dh), $dirName or die \"Couldn't open dir '$dirName'\";\n    my @files = readdir($dh);\n    closedir $dh;\n    foreach my $currentFile (@files) {\n        next if $currentFile =~ /^\\.{1,2}$/;\n        if ( lc($currentFile) =~ /.bundle$/ or lc($currentFile) =~ /.dylib$/ ) {\n            system(\"/usr/bin/codesign --force --timestamp=none --sign \\\"%@\\\" \\\"$dirName/$currentFile\\\"\");\n        }\n        if (-d \"$dirName/$currentFile\") {\n            recursiveCodesign(\"$dirName/$currentFile\");\n        }\n    }\n}\n", provisioningCertificate];
+        [perlOperationString appendFormat:@"\nsub recursiveCodesign {\n    my $dirName = shift;\n    opendir my($dh), $dirName or return;\n    my @files = readdir($dh);\n    closedir $dh;\n    foreach my $currentFile (@files) {\n        next if $currentFile =~ /^\\.{1,2}$/;\n        if ( lc($currentFile) =~ /.bundle$/ or lc($currentFile) =~ /.dylib$/ ) {\n            system(\"/usr/bin/codesign --force --timestamp=none --sign \\\"%@\\\" \\\"$dirName/$currentFile\\\"\");\n        }\n        if (-d \"$dirName/$currentFile\") {\n            recursiveCodesign(\"$dirName/$currentFile\");\n        }\n    }\n}\n", provisioningCertificate];
         
         // Check wether we already had our scripting stuff
         NSRange beginRange = [script rangeOfString:@"#BEGIN APPLY ENTITLEMENTS"];
