@@ -1068,7 +1068,8 @@
         [perlOperationString appendString:@"\n    system(\"export CODESIGN_ALLOCATE=\\\"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/codesign_allocate\\\"\");"];
         //[perlOperationString appendString:@"\n    $ENV{'CODESIGN_ALLOCATE'} = '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/codesign_allocate';"];
         
-        // Sign plugins
+        // Sign frameworks & plugins
+        [perlOperationString appendString:@"\n    recursiveCodesign(\"$EntitlementsPublishFile/Contents/Frameworks\");"];
         [perlOperationString appendString:@"\n    recursiveCodesign(\"$EntitlementsPublishFile/Contents/Plugins\");"];
         
         // Do we want entitlements or not?
@@ -1093,7 +1094,11 @@
         [perlOperationString appendString:@"\n}\n"];
         
         // Append recursive codesign function
-        [perlOperationString appendFormat:@"\nsub recursiveCodesign {\n    my $dirName = shift;\n    opendir my($dh), $dirName or return;\n    my @files = readdir($dh);\n    closedir $dh;\n    foreach my $currentFile (@files) {\n        next if $currentFile =~ /^\\.{1,2}$/;\n        if ( lc($currentFile) =~ /.bundle$/ or lc($currentFile) =~ /.dylib$/ ) {\n            system(\"/usr/bin/codesign --force --timestamp=none --sign \\\"%@\\\" \\\"$dirName/$currentFile\\\"\");\n        }\n        if (-d \"$dirName/$currentFile\") {\n            recursiveCodesign(\"$dirName/$currentFile\");\n        }\n    }\n}\n", provisioningCertificate];
+        if (withEntitlements == YES) {
+            [perlOperationString appendFormat:@"\nsub recursiveCodesign {\n    my $dirName = shift;\n    opendir my($dh), $dirName or return;\n    my @files = readdir($dh);\n    closedir $dh;\n    foreach my $currentFile (@files) {\n        next if $currentFile =~ /^\\.{1,2}$/;\n        if ( lc($currentFile) =~ /.bundle$/ or lc($currentFile) =~ /.dylib$/ ) {\n            system(\"/usr/bin/codesign --force --timestamp=none --sign \\\"%@\\\" --entitlements \\\"%@\\\" \\\"$dirName/$currentFile\\\"\");\n        }\n        if (-d \"$dirName/$currentFile\") {\n            recursiveCodesign(\"$dirName/$currentFile\");\n        }\n    }\n}\n", provisioningCertificate, entitlementsURL.path];
+        } else {
+            [perlOperationString appendFormat:@"\nsub recursiveCodesign {\n    my $dirName = shift;\n    opendir my($dh), $dirName or return;\n    my @files = readdir($dh);\n    closedir $dh;\n    foreach my $currentFile (@files) {\n        next if $currentFile =~ /^\\.{1,2}$/;\n        if ( lc($currentFile) =~ /.bundle$/ or lc($currentFile) =~ /.dylib$/ ) {\n            system(\"/usr/bin/codesign --force --timestamp=none --sign \\\"%@\\\" \\\"$dirName/$currentFile\\\"\");\n        }\n        if (-d \"$dirName/$currentFile\") {\n            recursiveCodesign(\"$dirName/$currentFile\");\n        }\n    }\n}\n", provisioningCertificate];
+        }
         
         // Check wether we already had our scripting stuff
         NSRange beginRange = [script rangeOfString:@"#BEGIN APPLY ENTITLEMENTS"];
