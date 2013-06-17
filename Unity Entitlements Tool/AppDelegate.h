@@ -1,5 +1,5 @@
 /********************************************************************************
- Copyright (c) 2011-2012, jemast software
+ Copyright (c) 2011-2013, jemast software
  All rights reserved.
  
  Redistribution and use in source and binary forms, with or without
@@ -28,8 +28,11 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface AppDelegate : NSObject <NSApplicationDelegate>
+@class MainViewController;
 
-@property (assign) IBOutlet NSWindow *window;
+@interface AppDelegate : NSObject <NSApplicationDelegate, NSOpenSavePanelDelegate>
+
+@property IBOutlet NSWindow *window;
+@property IBOutlet MainViewController *controller;
 
 @end

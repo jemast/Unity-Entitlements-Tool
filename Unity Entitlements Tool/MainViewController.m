@@ -1,5 +1,5 @@
 /********************************************************************************
- Copyright (c) 2011-2012, jemast software
+ Copyright (c) 2011-2013, jemast software
  All rights reserved.
  
  Redistribution and use in source and binary forms, with or without
@@ -36,15 +36,17 @@
 
 @implementation MainViewController
 
-@synthesize projectNameLabel, projectIconImageView, codeSignIconImageView, entitlementsIconImageView, sandboxingIconImageView, packagingIconImageView, pickProjectDirectoryButton, updateBuildPipelineButton, clearBuildPipelineButton;
+@synthesize codeSignIconImageView, entitlementsIconImageView, sandboxingIconImageView, packagingIconImageView, updateBuildPipelineButton, clearBuildPipelineButton;
 
 @synthesize codeSignBox, provisioningProfileAppIdLabel, provisioningProfilePopUpButton, provisioningProfileCertificatePopUpButton, codeSignCheckbox, bundleIdentifierTextField, macAppStoreCategoryPopUpButton, versionNumberTextField, bundleGetInfoTextField, setCustomIconButton, unsetCustomIconButton, customIconImageWell;
 
-@synthesize entitlementsBox, entitlementsCheckbox, entitlementsApplicationIdentifierTextField, iCloudContainerTextField, iCloudKeyValueStoreTextField;
+@synthesize entitlementsBox, entitlementsCheckbox, entitlementsApplicationIdentifierTextField, iCloudContainerTextField, iCloudKeyValueStoreTextField, entitlementsGameCenterCheckbox, entitlementApsPopUpButton;
 
 @synthesize sandboxingBox, sandboxingCheckbox, sbAllowIncomingNetworkConnectionsCheckbox, sbAllowOutgoingNetworkConnectionsCheckbox, sbAllowCameraAccessCheckbox, sbAllowMicrophoneAccessCheckbox, sbAllowUSBAccessCheckbox, sbAllowPrintingCheckbox, sbAllowAddressBookDataAccessCheckbox, sbAllowLocationServicesAccessCheckbox, sbAllowCalendarDataAccessCheckbox, sbFileSystemAccessPopUpButton, sbMusicFolderAccessPopUpButton, sbMoviesFolderAccessPopUpButton, sbPicturesFolderAccesPopUpButton, sbDownloadsFolderAccessPopUpButton;
 
 @synthesize packagingBox, packagingCheckbox, installerCertificatePopUpButton;
+
+@synthesize projectURL;
 
 
 ////////////////////
@@ -145,13 +147,6 @@
     return self;
 }
 
-- (void)awakeFromNib {
-    // register drag & drops for custom icon
-    //[self.customIconImageWell unregisterDraggedTypes];
-    //[self.customIconImageWell registerForDraggedTypes:[NSArray arrayWithObjects: NSFilenamesPboardType, (NSString*)kUTTypeAppleICNS, nil]];
-    //NSLog(@"%@", self.customIconImageWell.registeredDraggedTypes);
-}
-
 
 ///////////////////////////
 // Unity Project Actions //
@@ -159,63 +154,6 @@
 
 #pragma mark Unity Project Actions
 
-- (IBAction)pickProjectDirectoryPressed:(id)sender {
-    NSOpenPanel *openPanel = [NSOpenPanel openPanel];
-    openPanel.canChooseFiles = NO;
-    openPanel.canChooseDirectories = YES;
-    openPanel.allowsMultipleSelection = NO;
-    openPanel.delegate = self;
-    openPanel.title = @"Pick Project Directory";
-    [openPanel beginWithCompletionHandler:^(NSInteger result) {
-        if (result == NSFileHandlingPanelOKButton) {
-            // This block will allow easy early returns for errors opening project
-            void (^couldNotOpenProject)(NSError *) = ^(NSError *error) {
-                // Invalid folder, alert and prevent open panel validation
-                NSAlert *alert = [NSAlert alertWithMessageText:@"Could Not Open Project" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"Error : %@", (error ? error.localizedDescription : @"Undefined error.")];
-                [alert runModal];
-                
-                // Reset
-                [self reset];
-            };
-            
-            // Reset
-            [self reset];
-
-            // Save project URL
-            projectURL = [[openPanel URLs] lastObject];
-            
-            // Update project name
-            [self.projectNameLabel setStringValue:[[projectURL pathComponents] lastObject]];
-            
-            // Attempt to import project build pipeline
-            NSError *importError = nil;
-            if (![self importProjectBuildPipeline:&importError]) {
-                couldNotOpenProject(importError);
-                return;
-            }
-            
-            // Update provisioning profile list
-            NSError *profileError = nil;
-            if (![self updateProvisioningProfileList:&profileError]) {
-                couldNotOpenProject(profileError);
-                return;
-            }
-            
-            // Update installer profile list
-            if (![self updateInstallerProfileList:&profileError]) {
-                couldNotOpenProject(profileError);
-                return;
-            }
-            
-            // Enable pipeline update & clear buttons
-            [self.updateBuildPipelineButton setEnabled:YES];
-            [self.clearBuildPipelineButton setEnabled:YES];
-            
-            // Sync UI with loaded entitlements
-            [self syncUIWithEntitlements];
-        }
-    }];
-}
 
 - (IBAction)updateBuildPipelinePressed:(id)sender {
     // Failsafe
@@ -269,9 +207,6 @@
     
     // Save entitlements
     [[entitlements xmlData] writeToURL:entitlementsURL atomically:YES];
-    
-    // Save resource rules
-    //[@"<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\"><plist version=\"1.0\"><dict><key>rules</key><dict><key>^Resources/</key><true/><key>^Resources/.*\\.lproj/</key><dict><key>omit</key><true/><key>weight</key><real>10</real></dict><key>^Plugins/</key><dict><key>optional</key><true/><key>weight</key><real>30</real></dict><key>^version.plist$</key><true/></dict></dict></plist>" writeToURL:resourceRulesURL atomically:YES encoding:NSUTF8StringEncoding error:&writeError];
     
     // Update project status
     [self updateProjectStatus];
@@ -330,30 +265,11 @@
     
     // Update bundle identifier
     NSString *appId = [provisioningProfileAppIds objectAtIndex:self.provisioningProfilePopUpButton.indexOfSelectedItem];
-//    NSRange appIdFirstPart = [appId rangeOfString:@"."];
-//    if (appIdFirstPart.location != NSNotFound) {
-//        NSString *strippedAppId = [appId substringFromIndex:(appIdFirstPart.location + appIdFirstPart.length)];
-//        bundleIdentifier = [strippedAppId stringByReplacingOccurrencesOfString:@"*" withString:@""];
-//    } else {
-//        bundleIdentifier = @"";
-//    }
-//    [self.bundleIdentifierTextField setStringValue:bundleIdentifier];
     
     // Update AppID & cert list
     [self.provisioningProfileAppIdLabel setStringValue:appId];
     [self.provisioningProfileCertificatePopUpButton removeAllItems];
     [self.provisioningProfileCertificatePopUpButton addItemsWithTitles:[provisioningProfileCertificates objectAtIndex:self.provisioningProfilePopUpButton.indexOfSelectedItem]];
-    
-    // Update iCloud key-value store text field
-    //[self.iCloudKeyValueStoreTextField setStringValue:[provisioningProfileAppIds objectAtIndex:self.provisioningProfilePopUpButton.indexOfSelectedItem]];
-
-    // Update iCloud container text field
-    //[self.iCloudContainerTextField setStringValue:[provisioningProfileAppIds objectAtIndex:self.provisioningProfilePopUpButton.indexOfSelectedItem]];
-    
-    // Update entitlements immediately
-    //[entitlements setObject:[self.iCloudKeyValueStoreTextField stringValue] forKey:@"com.apple.application-identifier"];
-    //[entitlements setObject:[self.iCloudKeyValueStoreTextField stringValue] forKey:@"com.apple.developer.ubiquity-kvstore-identifier"];
-    //[entitlements setObject:[NSArray arrayWithObject:[self.iCloudContainerTextField stringValue]] forKey:@"com.apple.developer.ubiquity-container-identifiers"];
 }
 
 
@@ -457,6 +373,37 @@
         [entitlements removeObjectForKey:@"com.apple.developer.ubiquity-container-identifiers"];
     } else {
         [entitlements setObject:[NSArray arrayWithObject:[sender stringValue]] forKey:@"com.apple.developer.ubiquity-container-identifiers"];
+    }
+}
+
+- (IBAction)entitlementsOptionCheckboxPressed:(id)sender {
+    // Just pass any checkbox change to our entitlements dictionary
+    
+    if (sender == self.entitlementsGameCenterCheckbox) {
+        if (self.entitlementsGameCenterCheckbox.state)
+            [entitlements setObject:[NSNumber numberWithBool:YES] forKey:@"com.apple.developer.game-center"];
+        else
+            [entitlements removeObjectForKey:@"com.apple.developer.game-center"];
+    }
+}
+
+- (IBAction)entitlementsApsEnvironmentPicked:(id)sender {
+    // Just pass any pop-up button change to our entitlements dictionary
+    
+    // Clear first
+    [entitlements removeObjectForKey:@"com.apple.developer.aps-environment"];
+    
+    // Set any new object
+    switch (self.entitlementApsPopUpButton.indexOfSelectedItem) {
+        case 1:
+            [entitlements setObject:@"development" forKey:@"com.apple.developer.aps-environment"];
+            break;
+        case 2:
+            [entitlements setObject:@"production" forKey:@"com.apple.developer.aps-environment"];
+            break;
+            
+        default:
+            break;
     }
 }
 

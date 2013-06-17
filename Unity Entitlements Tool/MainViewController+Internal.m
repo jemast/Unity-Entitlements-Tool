@@ -1,5 +1,5 @@
 /********************************************************************************
- Copyright (c) 2011-2012, jemast software
+ Copyright (c) 2011-2013, jemast software
  All rights reserved.
  
  Redistribution and use in source and binary forms, with or without
@@ -241,9 +241,6 @@
             entitlements = [NSMutableDictionary dictionary];
     }
     
-    // Initialize resource rules URL
-    //resourceRulesURL = [projectURL URLByAppendingPathComponent:@"Assets/Editor/ResourceRules.plist" isDirectory:NO];
-    
     return YES;
 }
 
@@ -422,17 +419,6 @@
     
     // No profile ? No need to open anything...
     if (provisioningProfileNames.count == 0) {
-        /*NSAlert *alertView = [NSAlert alertWithMessageText:@"Provisioning Profile Error" defaultButton:@"Locate Profile" alternateButton:@"Cancel" otherButton:nil informativeTextWithFormat:@"Could not open or locate any valid provisioning profile."];
-        NSInteger alertReturnValue = [alertView runModal];
-        
-        // Do we want to locate a profile?
-        if (alertReturnValue == 1) {
-            NSOpenPanel *openPanel = [NSOpenPanel openPanel];
-            [openPanel setCanChooseFiles:YES];
-            [openPanel setCanChooseDirectories:NO];
-            [openPanel setAllowsMultipleSelection:NO];
-        }*/
-        
         NSError *profileError = [NSError errorWithDomain:NSCocoaErrorDomain code:0 userInfo:[NSDictionary dictionaryWithObject:@"Cannot open project if no provisioning profile is available." forKey:NSLocalizedDescriptionKey]];
         if (error != nil)
             *error = profileError;
@@ -590,12 +576,6 @@
             [self.provisioningProfileCertificatePopUpButton addItemsWithTitles:[provisioningProfileCertificates objectAtIndex:index]];
             [self.provisioningProfileCertificatePopUpButton selectItemAtIndex:certificateIndex];
             
-            // Update iCloud key-value store text field
-            //[self.iCloudKeyValueStoreTextField setStringValue:[provisioningProfileAppIds objectAtIndex:index]];
-            
-            // Update iCloud container text field
-            //[self.iCloudContainerTextField setStringValue:[provisioningProfileAppIds objectAtIndex:index]];
-            
             // Mark we did find a valid profile
             didFindValidProfile = YES;
         } else {
@@ -610,12 +590,6 @@
             [self.provisioningProfileAppIdLabel setStringValue:[provisioningProfileAppIds objectAtIndex:index]];
             [self.provisioningProfileCertificatePopUpButton removeAllItems];
             [self.provisioningProfileCertificatePopUpButton addItemsWithTitles:[provisioningProfileCertificates objectAtIndex:index]];
-            
-            // Update iCloud key-value store text field
-            //[self.iCloudKeyValueStoreTextField setStringValue:[provisioningProfileAppIds objectAtIndex:index]];
-            
-            // Update iCloud container text field
-            //[self.iCloudContainerTextField setStringValue:[provisioningProfileAppIds objectAtIndex:index]];
             
             // Mark we did find a valid profile
             didFindValidProfile = YES;
@@ -650,12 +624,6 @@
             bundleIdentifier = @"";
         }
         [self.bundleIdentifierTextField setStringValue:bundleIdentifier];
-        
-        // Update iCloud key-value store text field
-        //[self.iCloudKeyValueStoreTextField setStringValue:[provisioningProfileAppIds objectAtIndex:0]];
-        
-        // Update iCloud container text field
-        //[self.iCloudContainerTextField setStringValue:[provisioningProfileAppIds objectAtIndex:0]];
     }
     
     // Do we have packaging certificate loaded?
@@ -704,6 +672,15 @@
     
     if ([[entitlements objectForKey:@"com.apple.developer.ubiquity-container-identifiers"] isKindOfClass:[NSArray class]])
         [self.iCloudContainerTextField setStringValue:[[entitlements objectForKey:@"com.apple.developer.ubiquity-container-identifiers"] objectAtIndex:0]];
+    
+    [self.entitlementsGameCenterCheckbox setState:(([[entitlements objectForKey:@"com.apple.developer.game-center"] boolValue] == YES) ? NSOnState : NSOffState)];
+    
+    if ([[entitlements objectForKey:@"com.apple.developer.aps-environment"] isEqualToString:@"production"])
+        [self.entitlementApsPopUpButton selectItemAtIndex:2];
+    else if ([[entitlements objectForKey:@"com.apple.developer.aps-environment"] isEqualToString:@"development"])
+        [self.entitlementApsPopUpButton selectItemAtIndex:1];
+    else
+        [self.entitlementApsPopUpButton selectItemAtIndex:0];
     
     // Sync sandboxing UI
     self.sandboxingCheckbox.state = ([[entitlements objectForKey:@"com.apple.security.app-sandbox"] boolValue] == YES) ? NSOnState : NSOffState;
@@ -771,7 +748,6 @@
     projectURL = nil;
     postProcessScriptURL = nil;
     entitlementsURL = nil;
-    //resourceRulesURL = nil;
     
     bundleIdentifier = nil;
     applicationCategory = nil;
@@ -805,9 +781,6 @@
     [self.clearBuildPipelineButton setEnabled:NO];
     [self setCodeSignBoxInactive]; // this will recursively make entitlements box and sandboxing box inactive
     
-    // Reset project name
-    [self.projectNameLabel setStringValue:@"No Open Project"];
-    
     // Reset project status
     [self updateProjectStatus];
     
@@ -824,6 +797,8 @@
     [self.entitlementsApplicationIdentifierTextField setStringValue:@""];
     [self.iCloudKeyValueStoreTextField setStringValue:@""];
     [self.iCloudContainerTextField setStringValue:@""];
+    [self.entitlementsGameCenterCheckbox setState:NSOffState];
+    [self.entitlementApsPopUpButton selectItemAtIndex:0];
     
     [self.sandboxingCheckbox setState:NSOffState];
     [self.sbFileSystemAccessPopUpButton selectItemAtIndex:0];
@@ -899,6 +874,8 @@
     [self.entitlementsApplicationIdentifierTextField setEnabled:YES];
     [self.iCloudKeyValueStoreTextField setEnabled:YES];
     [self.iCloudContainerTextField setEnabled:YES];
+    [self.entitlementsGameCenterCheckbox setEnabled:YES];
+    [self.entitlementApsPopUpButton setEnabled:YES];
     
     // Dark out all labels
     // No IBOutletCollection ? No problem...
@@ -917,6 +894,8 @@
     [self.entitlementsApplicationIdentifierTextField setEnabled:NO];
     [self.iCloudKeyValueStoreTextField setEnabled:NO];
     [self.iCloudContainerTextField setEnabled:NO];
+    [self.entitlementsGameCenterCheckbox setEnabled:NO];
+    [self.entitlementApsPopUpButton setEnabled:NO];
     
     // Grey out all labels
     // No IBOutletCollection ? No problem...
@@ -1054,9 +1033,6 @@
         // Copy custom icon
         if ((customIconPath != nil) && ! [customIconPath isEqualToString:@""])
             [perlOperationString appendFormat:@"\n    system(\"cp \\\"%@\\\" \\\"$EntitlementsPublishFile/Contents/Resources/UnityPlayer.icns\\\"\");", customIconPath];
-        
-        // Create CodeResources file
-        //[perlOperationString appendString:@"\n    system(\"echo '<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"?><!DOCTYPE plist PUBLIC \\\"-//Apple//DTD PLIST 1.0//EN\\\" \\\"http://www.apple.com/DTDs/PropertyList-1.0.dtd\\\"><plist version=\\\"1.0\\\"><dict><key>rules</key><dict><key>^Plugins/</key><dict><key>optional</key><true/><key>weight</key><real>30</real><dict></dict></dict></plist>' > \\\"$EntitlementsPublishFile/Contents/ResourceRules.plist\\\" \");"];
 
         // set owner & group
         [perlOperationString appendFormat:@"\n    system(\"/usr/sbin/chown -RH \\\"%@:staff\\\" \\\"$EntitlementsPublishFile\\\"\");", NSUserName()];
@@ -1064,9 +1040,9 @@
         // chmod again for final permissions
         [perlOperationString appendString:@"\n    system(\"/bin/chmod -RH u+w,go-w,a+rX \\\"$EntitlementsPublishFile\\\"\");"];
                 
-        // Mac OS 10.8.2 Fix
-        [perlOperationString appendString:@"\n    system(\"export CODESIGN_ALLOCATE=\\\"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/codesign_allocate\\\"\");"];
-        //[perlOperationString appendString:@"\n    $ENV{'CODESIGN_ALLOCATE'} = '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/codesign_allocate';"];
+        // Codesign environment fix
+        [perlOperationString appendString:@"\n    my $CodesignEnvironment = $ENV{'CODESIGN_ALLOCATE'};"];
+        [perlOperationString appendString:@"\n    $ENV{'CODESIGN_ALLOCATE'}=\"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/codesign_allocate\";"];
         
         // Sign frameworks & plugins
         [perlOperationString appendString:@"\n    recursiveCodesign(\"$EntitlementsPublishFile/Contents/Frameworks\");"];
@@ -1074,11 +1050,9 @@
         
         // Do we want entitlements or not?
         if (withEntitlements == YES) {
-            //[perlOperationString appendFormat:@"\n    system(\"/usr/bin/codesign --force --timestamp=none --sign \\\"%@\\\" --resource-rules \\\"%@\\\" --entitlements \\\"%@\\\" \\\"$EntitlementsPublishFile\\\"\");", provisioningCertificate, resourceRulesURL.path, entitlementsURL.path];
             [perlOperationString appendFormat:@"\n    system(\"/usr/bin/codesign --force --timestamp=none --sign \\\"%@\\\" --entitlements \\\"%@\\\" \\\"$EntitlementsPublishFile\\\"\");", provisioningCertificate, entitlementsURL.path];
             postProcessScriptHasEntitlements = YES;
         } else {
-            //[perlOperationString appendFormat:@"\n    system(\"/usr/bin/codesign --force --timestamp=none --sign \\\"%@\\\" --resource-rules \\\"%@\\\" \\\"$EntitlementsPublishFile\\\"\");", provisioningCertificate, resourceRulesURL.path];
             [perlOperationString appendFormat:@"\n    system(\"/usr/bin/codesign --force --timestamp=none --sign \\\"%@\\\" \\\"$EntitlementsPublishFile\\\"\");", provisioningCertificate];
             postProcessScriptHasEntitlements = NO;
         }
@@ -1089,6 +1063,9 @@
             postProcessScriptHasPackaging = YES;
         } else
             postProcessScriptHasPackaging = NO;
+        
+        // Restore codesign environment
+        [perlOperationString appendString:@"\n    $ENV{'CODESIGN_ALLOCATE'}=$CodesignEnvironment;"];
         
         // Append ending
         [perlOperationString appendString:@"\n}\n"];

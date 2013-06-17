@@ -1,5 +1,5 @@
 /********************************************************************************
- Copyright (c) 2011-2012, jemast software
+ Copyright (c) 2011-2013, jemast software
  All rights reserved.
  
  Redistribution and use in source and binary forms, with or without
@@ -61,23 +61,17 @@
 // PROJECT ITEMS //
 ///////////////////
 
-// Labels
-@property (unsafe_unretained) IBOutlet NSTextField *projectNameLabel;
-
 // Image Views
-@property (unsafe_unretained) IBOutlet NSImageView *projectIconImageView;
-@property (unsafe_unretained) IBOutlet NSImageView *codeSignIconImageView;
-@property (unsafe_unretained) IBOutlet NSImageView *entitlementsIconImageView;
-@property (unsafe_unretained) IBOutlet NSImageView *sandboxingIconImageView;
-@property (unsafe_unretained) IBOutlet NSImageView *packagingIconImageView;
+@property (weak) IBOutlet NSImageView *codeSignIconImageView;
+@property (weak) IBOutlet NSImageView *entitlementsIconImageView;
+@property (weak) IBOutlet NSImageView *sandboxingIconImageView;
+@property (weak) IBOutlet NSImageView *packagingIconImageView;
 
 // Buttons
-@property (unsafe_unretained) IBOutlet NSButton *pickProjectDirectoryButton;
-@property (unsafe_unretained) IBOutlet NSButton *updateBuildPipelineButton;
-@property (unsafe_unretained) IBOutlet NSButton *clearBuildPipelineButton;
+@property (weak) IBOutlet NSButton *updateBuildPipelineButton;
+@property (weak) IBOutlet NSButton *clearBuildPipelineButton;
 
 // Actions
-- (IBAction)pickProjectDirectoryPressed:(id)sender;
 - (IBAction)updateBuildPipelinePressed:(id)sender;
 - (IBAction)clearBuildPipelinePressed:(id)sender;
 
@@ -86,28 +80,28 @@
 // CODESIGN ITEMS //
 ////////////////////
 
-@property (unsafe_unretained) IBOutlet NSBox *codeSignBox;
+@property (weak) IBOutlet NSBox *codeSignBox;
 
 // Labels
-@property (unsafe_unretained) IBOutlet NSTextField *provisioningProfileAppIdLabel;
+@property (weak) IBOutlet NSTextField *provisioningProfileAppIdLabel;
 
 // Buttons
-@property (unsafe_unretained) IBOutlet NSPopUpButton *provisioningProfilePopUpButton;
-@property (unsafe_unretained) IBOutlet NSPopUpButton *provisioningProfileCertificatePopUpButton;
-@property (unsafe_unretained) IBOutlet NSPopUpButton *macAppStoreCategoryPopUpButton;
-@property (unsafe_unretained) IBOutlet NSButton *setCustomIconButton;
-@property (unsafe_unretained) IBOutlet NSButton *unsetCustomIconButton;
+@property (weak) IBOutlet NSPopUpButton *provisioningProfilePopUpButton;
+@property (weak) IBOutlet NSPopUpButton *provisioningProfileCertificatePopUpButton;
+@property (weak) IBOutlet NSPopUpButton *macAppStoreCategoryPopUpButton;
+@property (weak) IBOutlet NSButton *setCustomIconButton;
+@property (weak) IBOutlet NSButton *unsetCustomIconButton;
 
 // Checkboxes
-@property (unsafe_unretained) IBOutlet NSButton *codeSignCheckbox;
+@property (weak) IBOutlet NSButton *codeSignCheckbox;
 
 // Text fields
-@property (unsafe_unretained) IBOutlet NSTextField *bundleIdentifierTextField;
-@property (unsafe_unretained) IBOutlet NSTextField *versionNumberTextField;
-@property (unsafe_unretained) IBOutlet NSTextField *bundleGetInfoTextField;
+@property (weak) IBOutlet NSTextField *bundleIdentifierTextField;
+@property (weak) IBOutlet NSTextField *versionNumberTextField;
+@property (weak) IBOutlet NSTextField *bundleGetInfoTextField;
 
 // Image wells
-@property (unsafe_unretained) IBOutlet NSImageView *customIconImageWell;
+@property (weak) IBOutlet NSImageView *customIconImageWell;
 
 
 // Actions
@@ -127,48 +121,54 @@
 // ENTITLEMENTS ITEMS //
 ////////////////////////
 
-@property (unsafe_unretained) IBOutlet NSBox *entitlementsBox;
+@property (weak) IBOutlet NSBox *entitlementsBox;
 
 // Checkboxes
-@property (unsafe_unretained) IBOutlet NSButton *entitlementsCheckbox;
+@property (weak) IBOutlet NSButton *entitlementsCheckbox;
+@property (weak) IBOutlet NSButton *entitlementsGameCenterCheckbox;
 
 // Text fields
-@property (unsafe_unretained) IBOutlet NSTextField *entitlementsApplicationIdentifierTextField;
-@property (unsafe_unretained) IBOutlet NSTextField *iCloudKeyValueStoreTextField;
-@property (unsafe_unretained) IBOutlet NSTextField *iCloudContainerTextField;
+@property (weak) IBOutlet NSTextField *entitlementsApplicationIdentifierTextField;
+@property (weak) IBOutlet NSTextField *iCloudKeyValueStoreTextField;
+@property (weak) IBOutlet NSTextField *iCloudContainerTextField;
+
+// Buttons
+@property (weak) IBOutlet NSPopUpButton *entitlementApsPopUpButton;
 
 // Actions
 - (IBAction)entitlementsCheckboxPressed:(id)sender;
 - (IBAction)entitlementsApplicationIdentifierTextFieldEdited:(id)sender;
 - (IBAction)iCloudKeyValueStoreTextFieldEdited:(id)sender;
 - (IBAction)iCloudContainerTextFieldEdited:(id)sender;
+- (IBAction)entitlementsOptionCheckboxPressed:(id)sender;
+- (IBAction)entitlementsApsEnvironmentPicked:(id)sender;
 
 
 //////////////////////
 // SANDBOXING ITEMS //
 //////////////////////
 
-@property (unsafe_unretained) IBOutlet NSBox *sandboxingBox;
+@property (weak) IBOutlet NSBox *sandboxingBox;
 
 // Checkboxes
-@property (unsafe_unretained) IBOutlet NSButton *sandboxingCheckbox;
+@property (weak) IBOutlet NSButton *sandboxingCheckbox;
 
-@property (unsafe_unretained) IBOutlet NSButton *sbAllowIncomingNetworkConnectionsCheckbox;
-@property (unsafe_unretained) IBOutlet NSButton *sbAllowOutgoingNetworkConnectionsCheckbox;
-@property (unsafe_unretained) IBOutlet NSButton *sbAllowCameraAccessCheckbox;
-@property (unsafe_unretained) IBOutlet NSButton *sbAllowMicrophoneAccessCheckbox;
-@property (unsafe_unretained) IBOutlet NSButton *sbAllowUSBAccessCheckbox;
-@property (unsafe_unretained) IBOutlet NSButton *sbAllowPrintingCheckbox;
-@property (unsafe_unretained) IBOutlet NSButton *sbAllowAddressBookDataAccessCheckbox;
-@property (unsafe_unretained) IBOutlet NSButton *sbAllowLocationServicesAccessCheckbox;
-@property (unsafe_unretained) IBOutlet NSButton *sbAllowCalendarDataAccessCheckbox;
+@property (weak) IBOutlet NSButton *sbAllowIncomingNetworkConnectionsCheckbox;
+@property (weak) IBOutlet NSButton *sbAllowOutgoingNetworkConnectionsCheckbox;
+@property (weak) IBOutlet NSButton *sbAllowCameraAccessCheckbox;
+@property (weak) IBOutlet NSButton *sbAllowMicrophoneAccessCheckbox;
+@property (weak) IBOutlet NSButton *sbAllowUSBAccessCheckbox;
+@property (weak) IBOutlet NSButton *sbAllowPrintingCheckbox;
+@property (weak) IBOutlet NSButton *sbAllowAddressBookDataAccessCheckbox;
+@property (weak) IBOutlet NSButton *sbAllowLocationServicesAccessCheckbox;
+@property (weak) IBOutlet NSButton *sbAllowCalendarDataAccessCheckbox;
 
 // Buttons
-@property (unsafe_unretained) IBOutlet NSPopUpButton *sbFileSystemAccessPopUpButton;
-@property (unsafe_unretained) IBOutlet NSPopUpButton *sbMusicFolderAccessPopUpButton;
-@property (unsafe_unretained) IBOutlet NSPopUpButton *sbMoviesFolderAccessPopUpButton;
-@property (unsafe_unretained) IBOutlet NSPopUpButton *sbPicturesFolderAccesPopUpButton;
-@property (unsafe_unretained) IBOutlet NSPopUpButton *sbDownloadsFolderAccessPopUpButton;
+@property (weak) IBOutlet NSPopUpButton *sbFileSystemAccessPopUpButton;
+@property (weak) IBOutlet NSPopUpButton *sbMusicFolderAccessPopUpButton;
+@property (weak) IBOutlet NSPopUpButton *sbMoviesFolderAccessPopUpButton;
+@property (weak) IBOutlet NSPopUpButton *sbPicturesFolderAccesPopUpButton;
+@property (weak) IBOutlet NSPopUpButton *sbDownloadsFolderAccessPopUpButton;
 
 // Actions
 - (IBAction)sandboxingCheckboxPressed:(id)sender;
@@ -180,17 +180,24 @@
 // PACKAGING ITEMS //
 /////////////////////
 
-@property (unsafe_unretained) IBOutlet NSBox *packagingBox;
+@property (weak) IBOutlet NSBox *packagingBox;
 
 // Checkboxes
-@property (unsafe_unretained) IBOutlet NSButton *packagingCheckbox;
+@property (weak) IBOutlet NSButton *packagingCheckbox;
 
 // Buttons
-@property (unsafe_unretained) IBOutlet NSPopUpButton *installerCertificatePopUpButton;
+@property (weak) IBOutlet NSPopUpButton *installerCertificatePopUpButton;
 
 // Actions
 - (IBAction)packagingCheckboxPressed:(id)sender;
 - (IBAction)installerCertificatePicked:(id)sender;
+
+
+///////////////////////////
+// CONTROLLER PROPERTIES //
+///////////////////////////
+
+@property NSURL *projectURL;
 
 
 @end

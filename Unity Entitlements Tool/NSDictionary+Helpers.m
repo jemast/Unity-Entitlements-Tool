@@ -1,5 +1,5 @@
 /********************************************************************************
- Copyright (c) 2011-2012, jemast software
+ Copyright (c) 2011-2013, jemast software
  All rights reserved.
  
  Redistribution and use in source and binary forms, with or without
