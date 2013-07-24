@@ -1009,7 +1009,7 @@
         postProcessScriptHasPackaging = NO;
     } else {
         // Prepare our perl operation string
-        NSMutableString *perlOperationString = [NSMutableString stringWithString:@"\nmy $EntitlementsPublishFile = $ARGV[0];\nmy $EntitlementsPublishTarget = $ARGV[1];\nmy $EntitlementsPackageFile = $ARGV[0]; chop($EntitlementsPackageFile); chop($EntitlementsPackageFile); chop($EntitlementsPackageFile); $EntitlementsPackageFile = $EntitlementsPackageFile . 'pkg';\nif (($EntitlementsPublishTarget eq \"standaloneOSXIntel\") || ($EntitlementsPublishTarget eq \"standaloneOSXUniversal\")) {"];
+        NSMutableString *perlOperationString = [NSMutableString stringWithString:@"\nmy $EntitlementsPublishFile = $ARGV[0];\nmy $EntitlementsPublishTarget = $ARGV[1];\nmy $EntitlementsPackageFile = $ARGV[0]; chop($EntitlementsPackageFile); chop($EntitlementsPackageFile); chop($EntitlementsPackageFile); $EntitlementsPackageFile = $EntitlementsPackageFile . 'pkg';\nif ((($EntitlementsPublishTarget eq \"standaloneOSXIntel\") || ($EntitlementsPublishTarget eq \"standaloneOSXUniversal\") || ($jEntitlementsPublishTarget eq \"Unsupported build target!\")) && ($jEntitlementsPublishFile =~ /.app$/) && (-d $jEntitlementsPublishFile) && ($^O == \"darwin\")) {"];
 
         // Embed provisioning profile if any (Developer IDs don't have profiles)
         if (!([provisioningProfilePath isEqualToString:@""] || !provisioningProfilePath))
