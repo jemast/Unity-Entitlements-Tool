@@ -40,7 +40,7 @@
 
 @synthesize codeSignBox, provisioningProfileAppIdLabel, provisioningProfilePopUpButton, provisioningProfileCertificatePopUpButton, codeSignCheckbox, bundleIdentifierTextField, macAppStoreCategoryPopUpButton, versionNumberTextField, bundleGetInfoTextField, setCustomIconButton, unsetCustomIconButton, customIconImageWell;
 
-@synthesize entitlementsBox, entitlementsCheckbox, entitlementsApplicationIdentifierTextField, iCloudContainerTextField, iCloudKeyValueStoreTextField, entitlementsGameCenterCheckbox, entitlementApsPopUpButton;
+@synthesize entitlementsBox, entitlementsCheckbox, iCloudContainerTextField, iCloudKeyValueStoreTextField, entitlementsGameCenterCheckbox, entitlementApsPopUpButton;
 
 @synthesize sandboxingBox, sandboxingCheckbox, sbAllowIncomingNetworkConnectionsCheckbox, sbAllowOutgoingNetworkConnectionsCheckbox, sbAllowCameraAccessCheckbox, sbAllowMicrophoneAccessCheckbox, sbAllowUSBAccessCheckbox, sbAllowPrintingCheckbox, sbAllowAddressBookDataAccessCheckbox, sbAllowLocationServicesAccessCheckbox, sbAllowCalendarDataAccessCheckbox, sbFileSystemAccessPopUpButton, sbMusicFolderAccessPopUpButton, sbMoviesFolderAccessPopUpButton, sbPicturesFolderAccesPopUpButton, sbDownloadsFolderAccessPopUpButton;
 
@@ -164,7 +164,6 @@
     [self bundleIdentifierTextFieldEdited:self.bundleIdentifierTextField];
     [self versionNumberTextFieldEdited:self.versionNumberTextField];
     [self bundleGetInfoTextFieldEdited:self.bundleGetInfoTextField];
-    [self entitlementsApplicationIdentifierTextFieldEdited:self.entitlementsApplicationIdentifierTextField];
     [self iCloudKeyValueStoreTextFieldEdited:self.iCloudKeyValueStoreTextField];
     [self iCloudContainerTextFieldEdited:self.iCloudContainerTextField];
     
@@ -197,13 +196,24 @@
     // Edit post-process script
     NSError *readError = nil;
     NSMutableString *postProcessScript = [NSMutableString stringWithContentsOfURL:postProcessScriptURL encoding:NSUTF8StringEncoding error:&readError];
-        
+    
+    // Make sure existing post-process script (if any) is perl
+    if (postProcessScript.length > 0 && [postProcessScript rangeOfString:@"#!/usr/bin/perl"].location == NSNotFound) {
+        // Alert and stop
+        NSAlert *alert = [NSAlert alertWithMessageText:@"Invalid existing post-process script" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"You have an existing post-process which is not using Perl scripting command line language. At the moment, Unity Entitlements Tool only supports Perl scripting."];
+        [alert runModal];
+        return;
+    }
+    
     // Update script to with new settings
     [self updatePostProcessScript:postProcessScript codesign:(self.codeSignCheckbox.state == NSOnState) entitlements:(self.entitlementsCheckbox.state == NSOnState) packaging:(self.packagingCheckbox.state == NSOnState)];
 
     // Save post-process script
     NSError *writeError = nil;
     [postProcessScript writeToURL:postProcessScriptURL atomically:YES encoding:NSUTF8StringEncoding error:&writeError];
+    
+    // Cleanup entitlements from invalid keys
+    [entitlements removeObjectForKey:@"com.apple.application-identifier"];
     
     // Save entitlements
     [[entitlements xmlData] writeToURL:entitlementsURL atomically:YES];
@@ -349,15 +359,6 @@
     
     // Fake this call to trigger some updates on the sandboxing side
     [self sandboxingCheckboxPressed:self.sandboxingCheckbox];
-}
-
-
-- (IBAction)entitlementsApplicationIdentifierTextFieldEdited:(id)sender {
-    if ([[sender stringValue] isEqualToString:@""]) {
-        [entitlements removeObjectForKey:@"com.apple.application-identifier"];
-    } else {
-        [entitlements setObject:[sender stringValue] forKey:@"com.apple.application-identifier"];
-    }
 }
 
 - (IBAction)iCloudKeyValueStoreTextFieldEdited:(id)sender {

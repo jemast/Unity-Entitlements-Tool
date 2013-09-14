@@ -96,116 +96,126 @@
             return NO;
         }
         
-        // Narrow down to our entitlements
-        bool hasPreviousSettings = NO;
-        NSRange beginRange = [scriptString rangeOfString:@"\n\n\n#BEGIN APPLY ENTITLEMENTS"];
-        if (beginRange.location == NSNotFound)
-            beginRange = [scriptString rangeOfString:@"#BEGIN APPLY ENTITLEMENTS"];
-        
-        if (beginRange.location != NSNotFound) {
-            NSRange endRange = [scriptString rangeOfString:@"#END APPLY ENTITLEMENTS\n\n"];
-            if (endRange.location == NSNotFound)
-                endRange = [scriptString rangeOfString:@"#END APPLY ENTITLEMENTS"];
-            
-            if (endRange.location != NSNotFound) {
-                scriptString = [scriptString substringWithRange:NSMakeRange(beginRange.location, endRange.location + endRange.length - beginRange.location)];
-                hasPreviousSettings = YES;
+        if (scriptString.length == 0) {
+            NSError *writeError = nil;
+            if (![@"#!/usr/bin/perl" writeToURL:postProcessScriptURL atomically:YES encoding:NSUTF8StringEncoding error:&writeError]) {
+                if (error != nil)
+                    *error = writeError;
+                
+                return NO;
             }
-        }
-        
-        if (hasPreviousSettings) {
-            // Attempt to retrieve profile path
-            NSRegularExpression *profileRegex = [NSRegularExpression regularExpressionWithPattern:@"system\\(\\\"cp \\\\\\\".*?\\\\\\\" \\\\\\\"\\$EntitlementsPublishFile\\/Contents\\/embedded\\.provisionprofile\\\\\\\"\\\"\\);" options:0 error:nil];
-            NSRange profileBeginRange = [profileRegex rangeOfFirstMatchInString:scriptString options:0 range:NSMakeRange(0, scriptString.length)];
-            if (profileBeginRange.location != NSNotFound) {
-                NSString *scriptSubstring = [scriptString substringFromIndex:(profileBeginRange.location + 13)];
-                NSRange profileEndRange = [scriptSubstring rangeOfString:@"\\\""];
-                if (profileEndRange.location != NSNotFound) {
-                    postProcessScriptHasCodesign = YES;
-                    provisioningProfilePath = [scriptSubstring substringToIndex:profileEndRange.location];
+        } else {
+            // Narrow down to our entitlements
+            bool hasPreviousSettings = NO;
+            NSRange beginRange = [scriptString rangeOfString:@"\n\n\n#BEGIN APPLY ENTITLEMENTS"];
+            if (beginRange.location == NSNotFound)
+                beginRange = [scriptString rangeOfString:@"#BEGIN APPLY ENTITLEMENTS"];
+            
+            if (beginRange.location != NSNotFound) {
+                NSRange endRange = [scriptString rangeOfString:@"#END APPLY ENTITLEMENTS\n\n"];
+                if (endRange.location == NSNotFound)
+                    endRange = [scriptString rangeOfString:@"#END APPLY ENTITLEMENTS"];
+                
+                if (endRange.location != NSNotFound) {
+                    scriptString = [scriptString substringWithRange:NSMakeRange(beginRange.location, endRange.location + endRange.length - beginRange.location)];
+                    hasPreviousSettings = YES;
                 }
             }
             
-            // Attempt to retrieve bundle identifier
-            NSRange bundleIdBeginRange = [scriptString rangeOfString:@"\\\"CFBundleIdentifier\\\" -string \\\""];
-            if (bundleIdBeginRange.location != NSNotFound) {
-                NSString *scriptSubstring = [scriptString substringFromIndex:(bundleIdBeginRange.location + bundleIdBeginRange.length)];
-                NSRange bundleIdEndRange = [scriptSubstring rangeOfString:@"\\\""];
-                if (bundleIdEndRange.location != NSNotFound) {
-                    bundleIdentifier = [scriptSubstring substringToIndex:bundleIdEndRange.location];
+            if (hasPreviousSettings) {
+                // Attempt to retrieve profile path
+                NSRegularExpression *profileRegex = [NSRegularExpression regularExpressionWithPattern:@"system\\(\\\"cp \\\\\\\".*?\\\\\\\" \\\\\\\"\\$EntitlementsPublishFile\\/Contents\\/embedded\\.provisionprofile\\\\\\\"\\\"\\);" options:0 error:nil];
+                NSRange profileBeginRange = [profileRegex rangeOfFirstMatchInString:scriptString options:0 range:NSMakeRange(0, scriptString.length)];
+                if (profileBeginRange.location != NSNotFound) {
+                    NSString *scriptSubstring = [scriptString substringFromIndex:(profileBeginRange.location + 13)];
+                    NSRange profileEndRange = [scriptSubstring rangeOfString:@"\\\""];
+                    if (profileEndRange.location != NSNotFound) {
+                        postProcessScriptHasCodesign = YES;
+                        provisioningProfilePath = [scriptSubstring substringToIndex:profileEndRange.location];
+                    }
                 }
-            }
-            
-            // Attempt to retrieve Mac App Store category
-            NSRange masCategoryBeginRange = [scriptString rangeOfString:@"\\\"LSApplicationCategoryType\\\" -string \\\""];
-            if (masCategoryBeginRange.location != NSNotFound) {
-                NSString *scriptSubstring = [scriptString substringFromIndex:(masCategoryBeginRange.location + masCategoryBeginRange.length)];
-                NSRange masCategoryEndRange = [scriptSubstring rangeOfString:@"\\\""];
-                if (masCategoryEndRange.location != NSNotFound) {
-                    applicationCategory = [scriptSubstring substringToIndex:masCategoryEndRange.location];
+                
+                // Attempt to retrieve bundle identifier
+                NSRange bundleIdBeginRange = [scriptString rangeOfString:@"\\\"CFBundleIdentifier\\\" -string \\\""];
+                if (bundleIdBeginRange.location != NSNotFound) {
+                    NSString *scriptSubstring = [scriptString substringFromIndex:(bundleIdBeginRange.location + bundleIdBeginRange.length)];
+                    NSRange bundleIdEndRange = [scriptSubstring rangeOfString:@"\\\""];
+                    if (bundleIdEndRange.location != NSNotFound) {
+                        bundleIdentifier = [scriptSubstring substringToIndex:bundleIdEndRange.location];
+                    }
                 }
-            }
-            
-            // Attempt to retrieve version number
-            NSRange versionNumberBeginRange = [scriptString rangeOfString:@"\\\"CFBundleVersion\\\" -string \\\""];
-            if (versionNumberBeginRange.location != NSNotFound) {
-                NSString *scriptSubstring = [scriptString substringFromIndex:(versionNumberBeginRange.location + versionNumberBeginRange.length)];
-                NSRange versionNumberEndRange = [scriptSubstring rangeOfString:@"\\\""];
-                if (versionNumberEndRange.location != NSNotFound) {
-                    versionNumber = [scriptSubstring substringToIndex:versionNumberEndRange.location];
+                
+                // Attempt to retrieve Mac App Store category
+                NSRange masCategoryBeginRange = [scriptString rangeOfString:@"\\\"LSApplicationCategoryType\\\" -string \\\""];
+                if (masCategoryBeginRange.location != NSNotFound) {
+                    NSString *scriptSubstring = [scriptString substringFromIndex:(masCategoryBeginRange.location + masCategoryBeginRange.length)];
+                    NSRange masCategoryEndRange = [scriptSubstring rangeOfString:@"\\\""];
+                    if (masCategoryEndRange.location != NSNotFound) {
+                        applicationCategory = [scriptSubstring substringToIndex:masCategoryEndRange.location];
+                    }
                 }
-            }
-            
-            // Attempt to retrieve bundle getinfo
-            NSRange bundleGetInfoBeginRange = [scriptString rangeOfString:@"\\\"CFBundleGetInfoString\\\" -string \\\""];
-            if (bundleGetInfoBeginRange.location != NSNotFound) {
-                NSString *scriptSubstring = [scriptString substringFromIndex:(bundleGetInfoBeginRange.location + bundleGetInfoBeginRange.length)];
-                NSRange bundleGetInfoEndRange = [scriptSubstring rangeOfString:@"\\\""];
-                if (bundleGetInfoEndRange.location != NSNotFound) {
-                    bundleGetInfo = [scriptSubstring substringToIndex:bundleGetInfoEndRange.location];
+                
+                // Attempt to retrieve version number
+                NSRange versionNumberBeginRange = [scriptString rangeOfString:@"\\\"CFBundleVersion\\\" -string \\\""];
+                if (versionNumberBeginRange.location != NSNotFound) {
+                    NSString *scriptSubstring = [scriptString substringFromIndex:(versionNumberBeginRange.location + versionNumberBeginRange.length)];
+                    NSRange versionNumberEndRange = [scriptSubstring rangeOfString:@"\\\""];
+                    if (versionNumberEndRange.location != NSNotFound) {
+                        versionNumber = [scriptSubstring substringToIndex:versionNumberEndRange.location];
+                    }
                 }
-            }
-            
-            // Attempt to retrieve custom icon
-            NSRegularExpression *customIconRegex = [NSRegularExpression regularExpressionWithPattern:@"system\\(\\\"cp \\\\\\\".*?\\\\\\\" \\\\\\\"\\$EntitlementsPublishFile\\/Contents\\/Resources\\/UnityPlayer\\.icns\\\\\\\"\\\"\\);" options:0 error:nil];
-            NSRange customIconBeginRange = [customIconRegex rangeOfFirstMatchInString:scriptString options:0 range:NSMakeRange(0, scriptString.length)];
-            if (customIconBeginRange.location != NSNotFound) {
-                NSString *scriptSubstring = [scriptString substringFromIndex:(customIconBeginRange.location + 13)];
-                NSRange customIconEndRange = [scriptSubstring rangeOfString:@"\\\""];
-                if (customIconEndRange.location != NSNotFound) {
-                   customIconPath = [scriptSubstring substringToIndex:customIconEndRange.location];
+                
+                // Attempt to retrieve bundle getinfo
+                NSRange bundleGetInfoBeginRange = [scriptString rangeOfString:@"\\\"CFBundleGetInfoString\\\" -string \\\""];
+                if (bundleGetInfoBeginRange.location != NSNotFound) {
+                    NSString *scriptSubstring = [scriptString substringFromIndex:(bundleGetInfoBeginRange.location + bundleGetInfoBeginRange.length)];
+                    NSRange bundleGetInfoEndRange = [scriptSubstring rangeOfString:@"\\\""];
+                    if (bundleGetInfoEndRange.location != NSNotFound) {
+                        bundleGetInfo = [scriptSubstring substringToIndex:bundleGetInfoEndRange.location];
+                    }
                 }
-            }
-            
-            // Attempt to retrieve certificate signature
-            NSRange codeSignBeginRange = [scriptString rangeOfString:@"/usr/bin/codesign --force --timestamp=none --sign \\\""];
-            if (codeSignBeginRange.location != NSNotFound) {
-                NSString *scriptSubstring = [scriptString substringFromIndex:(codeSignBeginRange.location + codeSignBeginRange.length)];
-                NSRange codeSignEndRange = [scriptSubstring rangeOfString:@"\\\""];
-                if (codeSignEndRange.location != NSNotFound) {
-                    postProcessScriptHasCodesign = YES;
-                    provisioningCertificate = [scriptSubstring substringToIndex:codeSignEndRange.location];
+                
+                // Attempt to retrieve custom icon
+                NSRegularExpression *customIconRegex = [NSRegularExpression regularExpressionWithPattern:@"system\\(\\\"cp \\\\\\\".*?\\\\\\\" \\\\\\\"\\$EntitlementsPublishFile\\/Contents\\/Resources\\/UnityPlayer\\.icns\\\\\\\"\\\"\\);" options:0 error:nil];
+                NSRange customIconBeginRange = [customIconRegex rangeOfFirstMatchInString:scriptString options:0 range:NSMakeRange(0, scriptString.length)];
+                if (customIconBeginRange.location != NSNotFound) {
+                    NSString *scriptSubstring = [scriptString substringFromIndex:(customIconBeginRange.location + 13)];
+                    NSRange customIconEndRange = [scriptSubstring rangeOfString:@"\\\""];
+                    if (customIconEndRange.location != NSNotFound) {
+                       customIconPath = [scriptSubstring substringToIndex:customIconEndRange.location];
+                    }
                 }
-            }
-            
-            // Attempt to retrieve if we had entitlements enabled
-            NSRange entitlementsBeginRange = [scriptString rangeOfString:@"\\\" --entitlements \\\""];
-            if (entitlementsBeginRange.location != NSNotFound) {
-                NSString *scriptSubstring = [scriptString substringFromIndex:(entitlementsBeginRange.location + entitlementsBeginRange.length)];
-                NSRange entitlementsEndRange = [scriptSubstring rangeOfString:@"\\\""];
-                if (entitlementsEndRange.location != NSNotFound) {
-                    postProcessScriptHasEntitlements = YES;
+                
+                // Attempt to retrieve certificate signature
+                NSRange codeSignBeginRange = [scriptString rangeOfString:@"/usr/bin/codesign --force --timestamp=none --sign \\\""];
+                if (codeSignBeginRange.location != NSNotFound) {
+                    NSString *scriptSubstring = [scriptString substringFromIndex:(codeSignBeginRange.location + codeSignBeginRange.length)];
+                    NSRange codeSignEndRange = [scriptSubstring rangeOfString:@"\\\""];
+                    if (codeSignEndRange.location != NSNotFound) {
+                        postProcessScriptHasCodesign = YES;
+                        provisioningCertificate = [scriptSubstring substringToIndex:codeSignEndRange.location];
+                    }
                 }
-            }
-            
-            // Attempt to retrieve packaging
-            NSRange packagingBeginRange = [scriptString rangeOfString:@"/usr/bin/productbuild --component \\\"$EntitlementsPublishFile\\\" /Applications --sign \\\""];
-            if (packagingBeginRange.location != NSNotFound) {
-                NSString *scriptSubstring = [scriptString substringFromIndex:(packagingBeginRange.location + packagingBeginRange.length)];
-                NSRange packagingEndRange = [scriptSubstring rangeOfString:@"\\\""];
-                if (packagingEndRange.location != NSNotFound) {
-                    postProcessScriptHasPackaging = YES;
-                    packagingCertificate = [scriptSubstring substringToIndex:packagingEndRange.location];
+                
+                // Attempt to retrieve if we had entitlements enabled
+                NSRange entitlementsBeginRange = [scriptString rangeOfString:@"\\\" --entitlements \\\""];
+                if (entitlementsBeginRange.location != NSNotFound) {
+                    NSString *scriptSubstring = [scriptString substringFromIndex:(entitlementsBeginRange.location + entitlementsBeginRange.length)];
+                    NSRange entitlementsEndRange = [scriptSubstring rangeOfString:@"\\\""];
+                    if (entitlementsEndRange.location != NSNotFound) {
+                        postProcessScriptHasEntitlements = YES;
+                    }
+                }
+                
+                // Attempt to retrieve packaging
+                NSRange packagingBeginRange = [scriptString rangeOfString:@"/usr/bin/productbuild --component \\\"$EntitlementsPublishFile\\\" /Applications --sign \\\""];
+                if (packagingBeginRange.location != NSNotFound) {
+                    NSString *scriptSubstring = [scriptString substringFromIndex:(packagingBeginRange.location + packagingBeginRange.length)];
+                    NSRange packagingEndRange = [scriptSubstring rangeOfString:@"\\\""];
+                    if (packagingEndRange.location != NSNotFound) {
+                        postProcessScriptHasPackaging = YES;
+                        packagingCertificate = [scriptSubstring substringToIndex:packagingEndRange.location];
+                    }
                 }
             }
         }
@@ -297,13 +307,13 @@
         return NO;
     }
     
-    if ((profiles == nil) || (profiles.count == 0)) {
+    /*if ((profiles == nil) || (profiles.count == 0)) {
         NSError *profileError = [NSError errorWithDomain:NSCocoaErrorDomain code:0 userInfo:[NSDictionary dictionaryWithObject:@"Could not open or locate any valid provisioning profile." forKey:NSLocalizedDescriptionKey]];
         if (error != nil)
             *error = profileError;
         
         return NO;
-    }
+    }*/
     
     for (NSURL *url in profiles) {
         if (![url.pathExtension isEqualToString:@"provisionprofile"])
@@ -663,9 +673,6 @@
         self.entitlementsCheckbox.state = NSOffState;
         [self setSandboxingBoxInactive];
     }
-    
-    if ([entitlements objectForKey:@"com.apple.application-identifier"])
-        [self.entitlementsApplicationIdentifierTextField setStringValue:[entitlements objectForKey:@"com.apple.application-identifier"]];
         
     if ([entitlements objectForKey:@"com.apple.developer.ubiquity-kvstore-identifier"])
         [self.iCloudKeyValueStoreTextField setStringValue:[entitlements objectForKey:@"com.apple.developer.ubiquity-kvstore-identifier"]];
@@ -794,7 +801,6 @@
     [self.bundleGetInfoTextField setStringValue:@""];
     
     [self.entitlementsCheckbox setState:NSOffState];
-    [self.entitlementsApplicationIdentifierTextField setStringValue:@""];
     [self.iCloudKeyValueStoreTextField setStringValue:@""];
     [self.iCloudContainerTextField setStringValue:@""];
     [self.entitlementsGameCenterCheckbox setState:NSOffState];
@@ -871,7 +877,6 @@
 - (void)setEntitlementsBoxActive {
     // Enable components
     [self.entitlementsCheckbox setEnabled:YES];
-    [self.entitlementsApplicationIdentifierTextField setEnabled:YES];
     [self.iCloudKeyValueStoreTextField setEnabled:YES];
     [self.iCloudContainerTextField setEnabled:YES];
     [self.entitlementsGameCenterCheckbox setEnabled:YES];
@@ -891,7 +896,6 @@
 - (void)setEntitlementsBoxInactive {
     // Disable components
     [self.entitlementsCheckbox setEnabled:NO];
-    [self.entitlementsApplicationIdentifierTextField setEnabled:NO];
     [self.iCloudKeyValueStoreTextField setEnabled:NO];
     [self.iCloudContainerTextField setEnabled:NO];
     [self.entitlementsGameCenterCheckbox setEnabled:NO];
@@ -1009,7 +1013,7 @@
         postProcessScriptHasPackaging = NO;
     } else {
         // Prepare our perl operation string
-        NSMutableString *perlOperationString = [NSMutableString stringWithString:@"\nmy $EntitlementsPublishFile = $ARGV[0];\nmy $EntitlementsPublishTarget = $ARGV[1];\nmy $EntitlementsPackageFile = $ARGV[0]; chop($EntitlementsPackageFile); chop($EntitlementsPackageFile); chop($EntitlementsPackageFile); $EntitlementsPackageFile = $EntitlementsPackageFile . 'pkg';\nif ((($EntitlementsPublishTarget eq \"standaloneOSXIntel\") || ($EntitlementsPublishTarget eq \"standaloneOSXUniversal\") || ($jEntitlementsPublishTarget eq \"Unsupported build target!\")) && ($jEntitlementsPublishFile =~ /.app$/) && (-d $jEntitlementsPublishFile) && ($^O == \"darwin\")) {"];
+        NSMutableString *perlOperationString = [NSMutableString stringWithString:@"\nUNITYENTITLEMENTSTOOL:\nmy $EntitlementsPublishFile = $ARGV[0];\nmy $EntitlementsPublishTarget = $ARGV[1];\nmy $EntitlementsPublishFileName = $ARGV[0]; chop($EntitlementsPublishFileName); chop($EntitlementsPublishFileName); chop($EntitlementsPublishFileName);\nmy $EntitlementsPackageFile = $EntitlementsPublishFileName . 'pkg';\nif ((($EntitlementsPublishTarget eq \"standaloneOSXIntel\") || ($EntitlementsPublishTarget eq \"standaloneOSXUniversal\") || ($EntitlementsPublishTarget eq \"Unsupported build target!\")) && ($EntitlementsPublishFile =~ /.app$/) && (-d $EntitlementsPublishFile) && ($^O == \"darwin\")) {"];
 
         // Embed provisioning profile if any (Developer IDs don't have profiles)
         if (!([provisioningProfilePath isEqualToString:@""] || !provisioningProfilePath))
@@ -1057,6 +1061,10 @@
             postProcessScriptHasEntitlements = NO;
         }
         
+        // Make an untouched copy before packaging
+        [perlOperationString appendString:@"\n    system(\"rm -R \\\"$EntitlementsPublishFileName (Untouched).app\\\"\");"];
+        [perlOperationString appendString:@"\n    system(\"cp -R \\\"$EntitlementsPublishFile\\\" \\\"$EntitlementsPublishFileName (Untouched).app\\\"\");"];
+        
         // Do we want packaging?
         if (withPackaging == YES) {
             [perlOperationString appendFormat:@"\n    system(\"/usr/bin/productbuild --component \\\"$EntitlementsPublishFile\\\" /Applications --sign \\\"%@\\\" --product \\\"$EntitlementsPublishFile/Contents/Info.plist\\\" \\\"$EntitlementsPackageFile\\\"\");", packagingCertificate];
@@ -1072,9 +1080,9 @@
         
         // Append recursive codesign function
         if (withEntitlements == YES) {
-            [perlOperationString appendFormat:@"\nsub recursiveCodesign {\n    my $dirName = shift;\n    opendir my($dh), $dirName or return;\n    my @files = readdir($dh);\n    closedir $dh;\n    foreach my $currentFile (@files) {\n        next if $currentFile =~ /^\\.{1,2}$/;\n        if ( lc($currentFile) =~ /.bundle$/ or lc($currentFile) =~ /.dylib$/ ) {\n            system(\"/usr/bin/codesign --force --timestamp=none --sign \\\"%@\\\" --entitlements \\\"%@\\\" \\\"$dirName/$currentFile\\\"\");\n        }\n        if (-d \"$dirName/$currentFile\") {\n            recursiveCodesign(\"$dirName/$currentFile\");\n        }\n    }\n}\n", provisioningCertificate, entitlementsURL.path];
+            [perlOperationString appendFormat:@"\nsub recursiveCodesign {\n    my $dirName = shift;\n    opendir my($dh), $dirName or return;\n    my @files = readdir($dh);\n    closedir $dh;\n    foreach my $currentFile (@files) {\n        next if $currentFile =~ /^\\.{1,2}$/;\n        if ( lc($currentFile) =~ /.bundle$/ or lc($currentFile) =~ /.dylib$/ or lc($currentFile) =~ /.a$/ ) {\n            system(\"/usr/bin/codesign --force --timestamp=none --sign \\\"%@\\\" --entitlements \\\"%@\\\" \\\"$dirName/$currentFile\\\"\");\n        }\n        if (-d \"$dirName/$currentFile\") {\n            recursiveCodesign(\"$dirName/$currentFile\");\n        }\n    }\n}\n", provisioningCertificate, entitlementsURL.path];
         } else {
-            [perlOperationString appendFormat:@"\nsub recursiveCodesign {\n    my $dirName = shift;\n    opendir my($dh), $dirName or return;\n    my @files = readdir($dh);\n    closedir $dh;\n    foreach my $currentFile (@files) {\n        next if $currentFile =~ /^\\.{1,2}$/;\n        if ( lc($currentFile) =~ /.bundle$/ or lc($currentFile) =~ /.dylib$/ ) {\n            system(\"/usr/bin/codesign --force --timestamp=none --sign \\\"%@\\\" \\\"$dirName/$currentFile\\\"\");\n        }\n        if (-d \"$dirName/$currentFile\") {\n            recursiveCodesign(\"$dirName/$currentFile\");\n        }\n    }\n}\n", provisioningCertificate];
+            [perlOperationString appendFormat:@"\nsub recursiveCodesign {\n    my $dirName = shift;\n    opendir my($dh), $dirName or return;\n    my @files = readdir($dh);\n    closedir $dh;\n    foreach my $currentFile (@files) {\n        next if $currentFile =~ /^\\.{1,2}$/;\n        if ( lc($currentFile) =~ /.bundle$/ or lc($currentFile) =~ /.dylib$/ or lc($currentFile) =~ /.a$/ ) {\n            system(\"/usr/bin/codesign --force --timestamp=none --sign \\\"%@\\\" \\\"$dirName/$currentFile\\\"\");\n        }\n        if (-d \"$dirName/$currentFile\") {\n            recursiveCodesign(\"$dirName/$currentFile\");\n        }\n    }\n}\n", provisioningCertificate];
         }
         
         // Check wether we already had our scripting stuff
@@ -1088,6 +1096,9 @@
             // No existing scripting stuff, append it
             [script appendFormat:@"\n\n\n#BEGIN APPLY ENTITLEMENTS%@#END APPLY ENTITLEMENTS\n\n", perlOperationString];
         }
+        
+        // Fix early exits
+        [script replaceOccurrencesOfString:@"exit;" withString:@"goto UNITYENTITLEMENTSTOOL;" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [script length])];
         
         // Mark our post process script as having codesign
         postProcessScriptHasCodesign = YES;

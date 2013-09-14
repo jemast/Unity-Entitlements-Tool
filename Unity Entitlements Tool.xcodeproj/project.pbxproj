@@ -198,6 +198,10 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0460;
+				TargetAttributes = {
+					C7394D731483EA2C000BD730 = {
+					};
+				};
 			};
 			buildConfigurationList = C7394D6E1483EA2C000BD730 /* Build configuration list for PBXProject "Unity Entitlements Tool" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -343,10 +347,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
-				CODE_SIGN_IDENTITY = "Developer ID Application: jemast software";
+				CODE_SIGN_IDENTITY = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Unity Entitlements Tool/Unity Entitlements Tool-Prefix.pch";
+				GCC_VERSION = "";
 				INFOPLIST_FILE = "Unity Entitlements Tool/Unity Entitlements Tool-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -359,10 +364,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
-				CODE_SIGN_IDENTITY = "Developer ID Application: jemast software";
+				CODE_SIGN_IDENTITY = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Unity Entitlements Tool/Unity Entitlements Tool-Prefix.pch";
+				GCC_VERSION = "";
 				INFOPLIST_FILE = "Unity Entitlements Tool/Unity Entitlements Tool-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
