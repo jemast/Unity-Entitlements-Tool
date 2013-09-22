@@ -673,7 +673,10 @@
         self.entitlementsCheckbox.state = NSOffState;
         [self setSandboxingBoxInactive];
     }
-        
+    
+    if ([entitlements objectForKey:@"com.apple.application-identifier"])
+        [self.entitlementsApplicationIdentifierTextField setStringValue:[entitlements objectForKey:@"com.apple.application-identifier"]];
+
     if ([entitlements objectForKey:@"com.apple.developer.ubiquity-kvstore-identifier"])
         [self.iCloudKeyValueStoreTextField setStringValue:[entitlements objectForKey:@"com.apple.developer.ubiquity-kvstore-identifier"]];
     
@@ -801,6 +804,7 @@
     [self.bundleGetInfoTextField setStringValue:@""];
     
     [self.entitlementsCheckbox setState:NSOffState];
+    [self.entitlementsApplicationIdentifierTextField setStringValue:@""];
     [self.iCloudKeyValueStoreTextField setStringValue:@""];
     [self.iCloudContainerTextField setStringValue:@""];
     [self.entitlementsGameCenterCheckbox setState:NSOffState];
@@ -877,6 +881,7 @@
 - (void)setEntitlementsBoxActive {
     // Enable components
     [self.entitlementsCheckbox setEnabled:YES];
+    [self.entitlementsApplicationIdentifierTextField setEnabled:YES];
     [self.iCloudKeyValueStoreTextField setEnabled:YES];
     [self.iCloudContainerTextField setEnabled:YES];
     [self.entitlementsGameCenterCheckbox setEnabled:YES];
@@ -896,6 +901,7 @@
 - (void)setEntitlementsBoxInactive {
     // Disable components
     [self.entitlementsCheckbox setEnabled:NO];
+    [self.entitlementsApplicationIdentifierTextField setEnabled:NO];
     [self.iCloudKeyValueStoreTextField setEnabled:NO];
     [self.iCloudContainerTextField setEnabled:NO];
     [self.entitlementsGameCenterCheckbox setEnabled:NO];

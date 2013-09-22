@@ -128,6 +128,7 @@
 @property (weak) IBOutlet NSButton *entitlementsGameCenterCheckbox;
 
 // Text fields
+@property (weak) IBOutlet NSTextField *entitlementsApplicationIdentifierTextField;
 @property (weak) IBOutlet NSTextField *iCloudKeyValueStoreTextField;
 @property (weak) IBOutlet NSTextField *iCloudContainerTextField;
 
@@ -136,6 +137,7 @@
 
 // Actions
 - (IBAction)entitlementsCheckboxPressed:(id)sender;
+- (IBAction)entitlementsApplicationIdentifierTextFieldEdited:(id)sender;
 - (IBAction)iCloudKeyValueStoreTextFieldEdited:(id)sender;
 - (IBAction)iCloudContainerTextFieldEdited:(id)sender;
 - (IBAction)entitlementsOptionCheckboxPressed:(id)sender;

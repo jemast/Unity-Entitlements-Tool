@@ -40,7 +40,7 @@
 
 @synthesize codeSignBox, provisioningProfileAppIdLabel, provisioningProfilePopUpButton, provisioningProfileCertificatePopUpButton, codeSignCheckbox, bundleIdentifierTextField, macAppStoreCategoryPopUpButton, versionNumberTextField, bundleGetInfoTextField, setCustomIconButton, unsetCustomIconButton, customIconImageWell;
 
-@synthesize entitlementsBox, entitlementsCheckbox, iCloudContainerTextField, iCloudKeyValueStoreTextField, entitlementsGameCenterCheckbox, entitlementApsPopUpButton;
+@synthesize entitlementsBox, entitlementsCheckbox, entitlementsApplicationIdentifierTextField, iCloudContainerTextField, iCloudKeyValueStoreTextField, entitlementsGameCenterCheckbox, entitlementApsPopUpButton;
 
 @synthesize sandboxingBox, sandboxingCheckbox, sbAllowIncomingNetworkConnectionsCheckbox, sbAllowOutgoingNetworkConnectionsCheckbox, sbAllowCameraAccessCheckbox, sbAllowMicrophoneAccessCheckbox, sbAllowUSBAccessCheckbox, sbAllowPrintingCheckbox, sbAllowAddressBookDataAccessCheckbox, sbAllowLocationServicesAccessCheckbox, sbAllowCalendarDataAccessCheckbox, sbFileSystemAccessPopUpButton, sbMusicFolderAccessPopUpButton, sbMoviesFolderAccessPopUpButton, sbPicturesFolderAccesPopUpButton, sbDownloadsFolderAccessPopUpButton;
 
@@ -164,6 +164,7 @@
     [self bundleIdentifierTextFieldEdited:self.bundleIdentifierTextField];
     [self versionNumberTextFieldEdited:self.versionNumberTextField];
     [self bundleGetInfoTextFieldEdited:self.bundleGetInfoTextField];
+    [self entitlementsApplicationIdentifierTextFieldEdited:self.entitlementsApplicationIdentifierTextField];
     [self iCloudKeyValueStoreTextFieldEdited:self.iCloudKeyValueStoreTextField];
     [self iCloudContainerTextFieldEdited:self.iCloudContainerTextField];
     
@@ -211,9 +212,6 @@
     // Save post-process script
     NSError *writeError = nil;
     [postProcessScript writeToURL:postProcessScriptURL atomically:YES encoding:NSUTF8StringEncoding error:&writeError];
-    
-    // Cleanup entitlements from invalid keys
-    [entitlements removeObjectForKey:@"com.apple.application-identifier"];
     
     // Save entitlements
     [[entitlements xmlData] writeToURL:entitlementsURL atomically:YES];
@@ -359,6 +357,14 @@
     
     // Fake this call to trigger some updates on the sandboxing side
     [self sandboxingCheckboxPressed:self.sandboxingCheckbox];
+}
+
+- (IBAction)entitlementsApplicationIdentifierTextFieldEdited:(id)sender {
+    if ([[sender stringValue] isEqualToString:@""]) {
+        [entitlements removeObjectForKey:@"com.apple.application-identifier"];
+    } else {
+        [entitlements setObject:[sender stringValue] forKey:@"com.apple.application-identifier"];
+    }
 }
 
 - (IBAction)iCloudKeyValueStoreTextFieldEdited:(id)sender {

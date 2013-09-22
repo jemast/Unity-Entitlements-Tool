@@ -211,12 +211,12 @@
                                 <popUpButton verticalHuggingPriority="750" id="577">
                                     <rect key="frame" x="169" y="117" width="175" height="26"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <popUpButtonCell key="cell" type="push" title="None" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" enabled="NO" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="578">
+                                    <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" enabled="NO" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="578">
                                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="cellTitle"/>
                                         <menu key="menu" title="OtherViews" id="579">
                                             <items>
-                                                <menuItem title="None" state="on" id="580"/>
+                                                <menuItem title="None" id="580"/>
                                                 <menuItem title="Read Access" id="581"/>
                                                 <menuItem title="Read/Write Access" id="582"/>
                                             </items>
@@ -238,12 +238,12 @@
                                 <popUpButton verticalHuggingPriority="750" id="612">
                                     <rect key="frame" x="169" y="90" width="175" height="26"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <popUpButtonCell key="cell" type="push" title="None" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" enabled="NO" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="613">
+                                    <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" enabled="NO" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="613">
                                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="cellTitle"/>
                                         <menu key="menu" title="OtherViews" id="614">
                                             <items>
-                                                <menuItem title="None" state="on" id="617"/>
+                                                <menuItem title="None" id="617"/>
                                                 <menuItem title="Read Access" id="616"/>
                                                 <menuItem title="Read/Write Access" id="615"/>
                                             </items>
@@ -265,12 +265,12 @@
                                 <popUpButton verticalHuggingPriority="750" id="620">
                                     <rect key="frame" x="169" y="64" width="175" height="26"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <popUpButtonCell key="cell" type="push" title="None" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" enabled="NO" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="621">
+                                    <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" enabled="NO" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="621">
                                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="cellTitle"/>
                                         <menu key="menu" title="OtherViews" id="622">
                                             <items>
-                                                <menuItem title="None" state="on" id="623"/>
+                                                <menuItem title="None" id="623"/>
                                                 <menuItem title="Read Access" id="624"/>
                                                 <menuItem title="Read/Write Access" id="625"/>
                                             </items>
@@ -292,12 +292,12 @@
                                 <popUpButton verticalHuggingPriority="750" id="628">
                                     <rect key="frame" x="169" y="38" width="175" height="26"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <popUpButtonCell key="cell" type="push" title="None" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" enabled="NO" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="629">
+                                    <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" enabled="NO" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="629">
                                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="cellTitle"/>
                                         <menu key="menu" title="OtherViews" id="630">
                                             <items>
-                                                <menuItem title="None" state="on" id="633"/>
+                                                <menuItem title="None" id="633"/>
                                                 <menuItem title="Read Access" id="632"/>
                                                 <menuItem title="Read/Write Access" id="631"/>
                                             </items>
@@ -319,12 +319,12 @@
                                 <popUpButton verticalHuggingPriority="750" id="923">
                                     <rect key="frame" x="169" y="11" width="175" height="26"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <popUpButtonCell key="cell" type="push" title="None" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" enabled="NO" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="924">
+                                    <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" enabled="NO" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="924">
                                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="cellTitle"/>
                                         <menu key="menu" title="OtherViews" id="925">
                                             <items>
-                                                <menuItem title="None" state="on" id="928"/>
+                                                <menuItem title="None" id="928"/>
                                                 <menuItem title="Read Access" id="927"/>
                                                 <menuItem title="Read/Write Access" id="926"/>
                                             </items>
@@ -475,7 +475,7 @@
                                     </textFieldCell>
                                 </textField>
                                 <textField verticalHuggingPriority="750" tag="666" id="558">
-                                    <rect key="frame" x="15" y="114" width="139" height="17"/>
+                                    <rect key="frame" x="15" y="82" width="139" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="iCloud Key-Value Store" id="559">
                                         <font key="font" metaFont="cellTitle"/>
@@ -484,7 +484,7 @@
                                     </textFieldCell>
                                 </textField>
                                 <textField verticalHuggingPriority="750" tag="666" id="562">
-                                    <rect key="frame" x="15" y="82" width="139" height="17"/>
+                                    <rect key="frame" x="15" y="50" width="139" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="iCloud Container" id="563">
                                         <font key="font" metaFont="cellTitle"/>
@@ -492,17 +492,8 @@
                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField verticalHuggingPriority="750" tag="666" id="934">
-                                    <rect key="frame" x="15" y="51" width="139" height="17"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Game Center" id="935">
-                                        <font key="font" metaFont="cellTitle"/>
-                                        <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
-                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                    </textFieldCell>
-                                </textField>
                                 <textField verticalHuggingPriority="750" tag="666" id="938">
-                                    <rect key="frame" x="15" y="20" width="139" height="17"/>
+                                    <rect key="frame" x="215" y="21" width="139" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Push Notifications" id="939">
                                         <font key="font" metaFont="cellTitle"/>
@@ -511,7 +502,7 @@
                                     </textFieldCell>
                                 </textField>
                                 <textField verticalHuggingPriority="750" id="560">
-                                    <rect key="frame" x="159" y="112" width="302" height="22"/>
+                                    <rect key="frame" x="159" y="80" width="302" height="22"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" enabled="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="e.g. AppID.BundleID (Optional)" drawsBackground="YES" id="561">
                                         <font key="font" metaFont="cellTitle"/>
@@ -522,8 +513,29 @@
                                         <action selector="iCloudKeyValueStoreTextFieldEdited:" target="665" id="719"/>
                                     </connections>
                                 </textField>
+                                <textField verticalHuggingPriority="750" tag="666" id="1om-1k-Pog">
+                                    <rect key="frame" x="15" y="112" width="139" height="17"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Application Identifier" id="HbV-hi-8ko">
+                                        <font key="font" size="12" name="LucidaGrande"/>
+                                        <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
+                                <textField verticalHuggingPriority="750" id="2Kd-qR-vLq">
+                                    <rect key="frame" x="159" y="110" width="302" height="22"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" enabled="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="e.g. AppID.BundleID (Optional)" placeholderString="e.g. AppID.BundleID (Optional)" drawsBackground="YES" id="7ei-Sr-Ge3">
+                                        <font key="font" size="12" name="LucidaGrande"/>
+                                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                    <connections>
+                                        <action selector="entitlementsApplicationIdentifierTextFieldEdited:" target="665" id="Fsp-e2-diu"/>
+                                    </connections>
+                                </textField>
                                 <textField verticalHuggingPriority="750" id="564">
-                                    <rect key="frame" x="159" y="80" width="302" height="22"/>
+                                    <rect key="frame" x="159" y="48" width="302" height="22"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" enabled="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="e.g. AppID.BundleID (Optional)" drawsBackground="YES" id="565">
                                         <font key="font" metaFont="cellTitle"/>
@@ -535,7 +547,7 @@
                                     </connections>
                                 </textField>
                                 <button id="932">
-                                    <rect key="frame" x="157" y="52" width="179" height="18"/>
+                                    <rect key="frame" x="16" y="20" width="158" height="18"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <buttonCell key="cell" type="check" title="Enable Game Center" bezelStyle="regularSquare" imagePosition="left" enabled="NO" inset="2" id="933">
                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -546,14 +558,14 @@
                                     </connections>
                                 </button>
                                 <popUpButton verticalHuggingPriority="750" id="940">
-                                    <rect key="frame" x="157" y="17" width="307" height="26"/>
+                                    <rect key="frame" x="334" y="16" width="130" height="26"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <popUpButtonCell key="cell" type="push" title="None" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" enabled="NO" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="941">
+                                    <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" enabled="NO" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="941">
                                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                        <font key="font" metaFont="system"/>
+                                        <font key="font" metaFont="menu"/>
                                         <menu key="menu" title="OtherViews" id="942">
                                             <items>
-                                                <menuItem title="None" state="on" id="943"/>
+                                                <menuItem title="None" id="943"/>
                                                 <menuItem title="Development" id="944"/>
                                                 <menuItem title="Production" id="945"/>
                                             </items>
@@ -730,7 +742,7 @@
                                 <textField verticalHuggingPriority="750" id="813">
                                     <rect key="frame" x="158" y="119" width="302" height="22"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" enabled="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="e.g. (c) jemast software, 2012 (Optional)" drawsBackground="YES" id="814">
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" enabled="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="e.g. (c) jemast software, 2013 (Optional)" drawsBackground="YES" id="814">
                                         <font key="font" metaFont="cellTitle"/>
                                         <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -944,6 +956,7 @@
                 <outlet property="codeSignIconImageView" destination="647" id="673"/>
                 <outlet property="customIconImageWell" destination="818" id="830"/>
                 <outlet property="entitlementApsPopUpButton" destination="940" id="946"/>
+                <outlet property="entitlementsApplicationIdentifierTextField" destination="2Kd-qR-vLq" id="F2m-ap-wMp"/>
                 <outlet property="entitlementsBox" destination="555" id="758"/>
                 <outlet property="entitlementsCheckbox" destination="538" id="696"/>
                 <outlet property="entitlementsGameCenterCheckbox" destination="932" id="936"/>
@@ -951,7 +964,6 @@
                 <outlet property="iCloudContainerTextField" destination="564" id="710"/>
                 <outlet property="iCloudKeyValueStoreTextField" destination="560" id="711"/>
                 <outlet property="installerCertificatePopUpButton" destination="896" id="905"/>
-                <outlet property="keyValueStoreTextField" destination="560" id="709"/>
                 <outlet property="macAppStoreCategoryPopUpButton" destination="795" id="799"/>
                 <outlet property="packagingBox" destination="778" id="784"/>
                 <outlet property="packagingCheckbox" destination="781" id="785"/>
