@@ -339,6 +339,32 @@
     customIconPath = [[(NSImageView *)sender image] name];
 }
 
+- (IBAction)customSplashScreenWellAction:(id)sender {
+    customSplashScreenPath = [[(NSImageView *)sender image] name];
+}
+
+- (IBAction)setCustomSplashScreenButtonPressed:(id)sender {
+    NSOpenPanel *openPanel = [NSOpenPanel openPanel];
+    openPanel.canChooseFiles = YES;
+    openPanel.canChooseDirectories = NO;
+    openPanel.allowsMultipleSelection = NO;
+    openPanel.delegate = self;
+    openPanel.title = @"Pick Custom Splash Screen File";
+    [openPanel setAllowedFileTypes:[NSArray arrayWithObject:@"tif"]];
+    openPanel.allowsOtherFileTypes = NO;
+    [openPanel beginWithCompletionHandler:^(NSInteger result) {
+        if (result == NSFileHandlingPanelOKButton) {
+            customSplashScreenPath = [[[openPanel URLs] lastObject] path];
+            [self.customSplashScreenImageWell setImage:[[NSImage alloc] initWithContentsOfFile:customSplashScreenPath]];
+        }
+    }];
+}
+
+- (IBAction)unsetCustomSplashScreenButtonPressed:(id)sender {
+    [self.customSplashScreenImageWell setImage:nil];
+    customSplashScreenPath = nil;
+}
+
 //////////////////////////
 // Entitlements Actions //
 //////////////////////////

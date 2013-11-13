@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="4510" systemVersion="12F37" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="4511" systemVersion="13A603" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment defaultVersion="1070" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="4510"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="4511"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -148,17 +148,17 @@
         <window title="Unity Entitlements Tool" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" visibleAtLaunch="NO" animationBehavior="default" id="371">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" texturedBackground="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="150" y="650" width="927" height="620"/>
+            <rect key="contentRect" x="150" y="650" width="927" height="594"/>
             <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1418"/>
             <view key="contentView" id="372">
-                <rect key="frame" x="0.0" y="0.0" width="927" height="620"/>
+                <rect key="frame" x="0.0" y="0.0" width="927" height="594"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <box autoresizesSubviews="NO" title="Sandboxing" borderType="line" id="760">
-                        <rect key="frame" x="499" y="217" width="411" height="399"/>
+                        <rect key="frame" x="499" y="212" width="411" height="378"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <view key="contentView">
-                            <rect key="frame" x="1" y="1" width="409" height="383"/>
+                            <rect key="frame" x="1" y="1" width="409" height="362"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <button id="568">
@@ -172,15 +172,6 @@
                                         <action selector="sandboxingCheckboxPressed:" target="665" id="717"/>
                                     </connections>
                                 </button>
-                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" tag="666" id="566">
-                                    <rect key="frame" x="15" y="360" width="419" height="13"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="App Sandboxing is mandatory for Mac App Store distribution." id="567">
-                                        <font key="font" size="10" name="LucidaGrande"/>
-                                        <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
-                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                    </textFieldCell>
-                                </textField>
                                 <textField verticalHuggingPriority="750" tag="666" id="575">
                                     <rect key="frame" x="15" y="122" width="134" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -448,14 +439,14 @@
                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </box>
                     <box autoresizesSubviews="NO" title="Entitlements" borderType="line" id="555">
-                        <rect key="frame" x="17" y="16" width="480" height="204"/>
+                        <rect key="frame" x="17" y="16" width="480" height="178"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <view key="contentView">
-                            <rect key="frame" x="1" y="1" width="478" height="188"/>
+                            <rect key="frame" x="1" y="1" width="478" height="162"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <button id="538">
-                                    <rect key="frame" x="16" y="141" width="250" height="18"/>
+                                    <rect key="frame" x="16" y="136" width="250" height="18"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <buttonCell key="cell" type="check" title="Enable Entitlements" bezelStyle="regularSquare" imagePosition="left" alignment="left" enabled="NO" inset="2" id="539">
                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -465,17 +456,8 @@
                                         <action selector="entitlementsCheckboxPressed:" target="665" id="716"/>
                                     </connections>
                                 </button>
-                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" tag="666" id="556">
-                                    <rect key="frame" x="15" y="165" width="466" height="13"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Entitlements are mandatory for Mac App Store distribution." id="557">
-                                        <font key="font" size="10" name="LucidaGrande"/>
-                                        <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
-                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                    </textFieldCell>
-                                </textField>
                                 <textField verticalHuggingPriority="750" tag="666" id="558">
-                                    <rect key="frame" x="15" y="82" width="139" height="17"/>
+                                    <rect key="frame" x="15" y="77" width="139" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="iCloud Key-Value Store" id="559">
                                         <font key="font" metaFont="cellTitle"/>
@@ -484,7 +466,7 @@
                                     </textFieldCell>
                                 </textField>
                                 <textField verticalHuggingPriority="750" tag="666" id="562">
-                                    <rect key="frame" x="15" y="50" width="139" height="17"/>
+                                    <rect key="frame" x="15" y="45" width="139" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="iCloud Container" id="563">
                                         <font key="font" metaFont="cellTitle"/>
@@ -493,7 +475,7 @@
                                     </textFieldCell>
                                 </textField>
                                 <textField verticalHuggingPriority="750" tag="666" id="938">
-                                    <rect key="frame" x="215" y="21" width="139" height="17"/>
+                                    <rect key="frame" x="215" y="16" width="139" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Push Notifications" id="939">
                                         <font key="font" metaFont="cellTitle"/>
@@ -502,7 +484,7 @@
                                     </textFieldCell>
                                 </textField>
                                 <textField verticalHuggingPriority="750" id="560">
-                                    <rect key="frame" x="159" y="80" width="302" height="22"/>
+                                    <rect key="frame" x="159" y="75" width="302" height="22"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" enabled="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="e.g. AppID.BundleID (Optional)" drawsBackground="YES" id="561">
                                         <font key="font" metaFont="cellTitle"/>
@@ -514,7 +496,7 @@
                                     </connections>
                                 </textField>
                                 <textField verticalHuggingPriority="750" tag="666" id="1om-1k-Pog">
-                                    <rect key="frame" x="15" y="112" width="139" height="17"/>
+                                    <rect key="frame" x="15" y="107" width="139" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Application Identifier" id="HbV-hi-8ko">
                                         <font key="font" size="12" name="LucidaGrande"/>
@@ -523,7 +505,7 @@
                                     </textFieldCell>
                                 </textField>
                                 <textField verticalHuggingPriority="750" id="2Kd-qR-vLq">
-                                    <rect key="frame" x="159" y="110" width="302" height="22"/>
+                                    <rect key="frame" x="159" y="105" width="302" height="22"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" enabled="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="e.g. AppID.BundleID (Optional)" placeholderString="e.g. AppID.BundleID (Optional)" drawsBackground="YES" id="7ei-Sr-Ge3">
                                         <font key="font" size="12" name="LucidaGrande"/>
@@ -535,7 +517,7 @@
                                     </connections>
                                 </textField>
                                 <textField verticalHuggingPriority="750" id="564">
-                                    <rect key="frame" x="159" y="48" width="302" height="22"/>
+                                    <rect key="frame" x="159" y="43" width="302" height="22"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" enabled="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="e.g. AppID.BundleID (Optional)" drawsBackground="YES" id="565">
                                         <font key="font" metaFont="cellTitle"/>
@@ -547,7 +529,7 @@
                                     </connections>
                                 </textField>
                                 <button id="932">
-                                    <rect key="frame" x="16" y="20" width="158" height="18"/>
+                                    <rect key="frame" x="16" y="15" width="158" height="18"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <buttonCell key="cell" type="check" title="Enable Game Center" bezelStyle="regularSquare" imagePosition="left" enabled="NO" inset="2" id="933">
                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -558,7 +540,7 @@
                                     </connections>
                                 </button>
                                 <popUpButton verticalHuggingPriority="750" id="940">
-                                    <rect key="frame" x="334" y="16" width="130" height="26"/>
+                                    <rect key="frame" x="334" y="11" width="130" height="26"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" enabled="NO" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="941">
                                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -581,14 +563,14 @@
                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </box>
                     <box autoresizesSubviews="NO" title="Code Sign" borderType="line" id="540">
-                        <rect key="frame" x="17" y="219" width="480" height="397"/>
+                        <rect key="frame" x="17" y="193" width="480" height="397"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <view key="contentView">
                             <rect key="frame" x="1" y="1" width="478" height="381"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <button id="536">
-                                    <rect key="frame" x="16" y="336" width="250" height="18"/>
+                                    <rect key="frame" x="16" y="355" width="250" height="18"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <buttonCell key="cell" type="check" title="Code Sign Application" bezelStyle="regularSquare" imagePosition="left" alignment="left" enabled="NO" inset="2" id="537">
                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -598,26 +580,8 @@
                                         <action selector="codeSignCheckboxPressed:" target="665" id="694"/>
                                     </connections>
                                 </button>
-                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" tag="666" id="543">
-                                    <rect key="frame" x="15" y="360" width="466" height="13"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Code Sign is mandatory for Mac App Store distribution." id="544">
-                                        <font key="font" size="10" name="LucidaGrande"/>
-                                        <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
-                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                    </textFieldCell>
-                                </textField>
-                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" tag="666" id="551">
-                                    <rect key="frame" x="15" y="313" width="466" height="17"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Select a valid provisioning profile for either development or distribution." id="552">
-                                        <font key="font" size="10" name="LucidaGrande"/>
-                                        <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
-                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                    </textFieldCell>
-                                </textField>
                                 <popUpButton verticalHuggingPriority="750" id="545">
-                                    <rect key="frame" x="155" y="285" width="308" height="26"/>
+                                    <rect key="frame" x="155" y="325" width="308" height="26"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" enabled="NO" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="546">
                                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -629,7 +593,7 @@
                                     </connections>
                                 </popUpButton>
                                 <popUpButton verticalHuggingPriority="750" id="907">
-                                    <rect key="frame" x="155" y="238" width="308" height="26"/>
+                                    <rect key="frame" x="155" y="278" width="308" height="26"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" enabled="NO" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="908">
                                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -641,7 +605,7 @@
                                     </connections>
                                 </popUpButton>
                                 <popUpButton verticalHuggingPriority="750" id="795">
-                                    <rect key="frame" x="155" y="180" width="308" height="26"/>
+                                    <rect key="frame" x="155" y="220" width="308" height="26"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" enabled="NO" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="796">
                                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -653,7 +617,7 @@
                                     </connections>
                                 </popUpButton>
                                 <textField verticalHuggingPriority="750" tag="666" id="553">
-                                    <rect key="frame" x="15" y="291" width="138" height="17"/>
+                                    <rect key="frame" x="15" y="331" width="138" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Provisioning Profile" id="554">
                                         <font key="font" metaFont="cellTitle"/>
@@ -662,7 +626,7 @@
                                     </textFieldCell>
                                 </textField>
                                 <textField verticalHuggingPriority="750" tag="666" id="682">
-                                    <rect key="frame" x="15" y="266" width="138" height="17"/>
+                                    <rect key="frame" x="15" y="306" width="138" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Associated App ID" id="683">
                                         <font key="font" metaFont="cellTitle"/>
@@ -671,7 +635,7 @@
                                     </textFieldCell>
                                 </textField>
                                 <textField verticalHuggingPriority="750" tag="666" id="686">
-                                    <rect key="frame" x="159" y="266" width="304" height="17"/>
+                                    <rect key="frame" x="159" y="306" width="304" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="--" placeholderString="" usesSingleLineMode="YES" id="687">
                                         <font key="font" metaFont="cellTitle"/>
@@ -680,7 +644,7 @@
                                     </textFieldCell>
                                 </textField>
                                 <textField verticalHuggingPriority="750" tag="666" id="684">
-                                    <rect key="frame" x="15" y="241" width="138" height="17"/>
+                                    <rect key="frame" x="15" y="281" width="138" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Associated Certificate" id="685">
                                         <font key="font" metaFont="cellTitle"/>
@@ -689,7 +653,7 @@
                                     </textFieldCell>
                                 </textField>
                                 <textField verticalHuggingPriority="750" tag="666" id="772">
-                                    <rect key="frame" x="15" y="214" width="138" height="17"/>
+                                    <rect key="frame" x="15" y="254" width="138" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Bundle Identifier" id="773">
                                         <font key="font" metaFont="cellTitle"/>
@@ -698,7 +662,7 @@
                                     </textFieldCell>
                                 </textField>
                                 <textField verticalHuggingPriority="750" tag="666" id="793">
-                                    <rect key="frame" x="15" y="185" width="138" height="17"/>
+                                    <rect key="frame" x="15" y="225" width="138" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="App Store Category" id="794">
                                         <font key="font" metaFont="cellTitle"/>
@@ -707,7 +671,7 @@
                                     </textFieldCell>
                                 </textField>
                                 <textField verticalHuggingPriority="750" tag="666" id="807">
-                                    <rect key="frame" x="15" y="153" width="138" height="17"/>
+                                    <rect key="frame" x="15" y="193" width="138" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Version Number" id="808">
                                         <font key="font" metaFont="cellTitle"/>
@@ -716,7 +680,7 @@
                                     </textFieldCell>
                                 </textField>
                                 <textField verticalHuggingPriority="750" id="774">
-                                    <rect key="frame" x="158" y="212" width="302" height="22"/>
+                                    <rect key="frame" x="158" y="252" width="302" height="22"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" enabled="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="e.g. com.company.app (Mandatory)" drawsBackground="YES" id="775">
                                         <font key="font" metaFont="cellTitle"/>
@@ -728,7 +692,7 @@
                                     </connections>
                                 </textField>
                                 <textField verticalHuggingPriority="750" id="804">
-                                    <rect key="frame" x="158" y="151" width="302" height="22"/>
+                                    <rect key="frame" x="158" y="191" width="302" height="22"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" enabled="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="e.g. 1.0 (Mandatory)" drawsBackground="YES" id="805">
                                         <font key="font" metaFont="cellTitle"/>
@@ -740,7 +704,7 @@
                                     </connections>
                                 </textField>
                                 <textField verticalHuggingPriority="750" id="813">
-                                    <rect key="frame" x="158" y="119" width="302" height="22"/>
+                                    <rect key="frame" x="158" y="159" width="302" height="22"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" enabled="NO" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="e.g. (c) jemast software, 2013 (Optional)" drawsBackground="YES" id="814">
                                         <font key="font" metaFont="cellTitle"/>
@@ -752,7 +716,7 @@
                                     </connections>
                                 </textField>
                                 <textField verticalHuggingPriority="750" tag="666" id="811">
-                                    <rect key="frame" x="15" y="122" width="138" height="17"/>
+                                    <rect key="frame" x="15" y="162" width="138" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Bundle Get Info (opt.)" id="812">
                                         <font key="font" metaFont="cellTitle"/>
@@ -761,7 +725,7 @@
                                     </textFieldCell>
                                 </textField>
                                 <textField verticalHuggingPriority="750" tag="666" id="816">
-                                    <rect key="frame" x="15" y="94" width="138" height="17"/>
+                                    <rect key="frame" x="15" y="134" width="138" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Icon File (.icns)" id="817">
                                         <font key="font" metaFont="cellTitle"/>
@@ -769,16 +733,33 @@
                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
+                                <textField verticalHuggingPriority="750" tag="666" id="1OM-WL-UUh">
+                                    <rect key="frame" x="15" y="59" width="138" height="17"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Splash Screen (.tif)" id="qlC-DD-gHL">
+                                        <font key="font" metaFont="titleBar" size="12"/>
+                                        <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
                                 <imageView id="818" customClass="IconImageView">
-                                    <rect key="frame" x="171" y="11" width="103" height="103"/>
+                                    <rect key="frame" x="221" y="88" width="59" height="59"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <imageCell key="cell" enabled="NO" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" imageFrameStyle="grayBezel" id="819"/>
                                     <connections>
                                         <action selector="customIconWellAction:" target="665" id="829"/>
                                     </connections>
                                 </imageView>
+                                <imageView id="h4M-UI-d3p" customClass="SplashScreenImageView">
+                                    <rect key="frame" x="221" y="9" width="59" height="59"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <imageCell key="cell" enabled="NO" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" imageFrameStyle="grayBezel" id="2tG-4q-qUS"/>
+                                    <connections>
+                                        <action selector="customSplashScreenWellAction:" target="665" id="LuV-5c-K0I"/>
+                                    </connections>
+                                </imageView>
                                 <button verticalHuggingPriority="750" id="820">
-                                    <rect key="frame" x="296" y="60" width="170" height="32"/>
+                                    <rect key="frame" x="296" y="116" width="170" height="32"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <buttonCell key="cell" type="push" title="Set icon file" bezelStyle="rounded" alignment="center" enabled="NO" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="821">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -788,8 +769,19 @@
                                         <action selector="setCustomIconButtonPressed:" target="665" id="827"/>
                                     </connections>
                                 </button>
+                                <button verticalHuggingPriority="750" id="xfZ-IR-j6O">
+                                    <rect key="frame" x="296" y="37" width="170" height="32"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <buttonCell key="cell" type="push" title="Set splash screen file" bezelStyle="rounded" alignment="center" enabled="NO" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="OVY-GI-YVS">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="titleBar" size="12"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="setCustomSplashScreenButtonPressed:" target="665" id="igC-N5-3h0"/>
+                                    </connections>
+                                </button>
                                 <button verticalHuggingPriority="750" id="824">
-                                    <rect key="frame" x="296" y="28" width="170" height="32"/>
+                                    <rect key="frame" x="296" y="84" width="170" height="32"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <buttonCell key="cell" type="push" title="Unset icon file" bezelStyle="rounded" alignment="center" enabled="NO" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="825">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -799,10 +791,30 @@
                                         <action selector="unsetCustomIconButtonPressed:" target="665" id="828"/>
                                     </connections>
                                 </button>
+                                <button verticalHuggingPriority="750" id="Ff3-Ah-CKT">
+                                    <rect key="frame" x="296" y="7" width="170" height="32"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <buttonCell key="cell" type="push" title="Unset splash screen file" bezelStyle="rounded" alignment="center" enabled="NO" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="t1Q-79-erx">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="titleBar" size="12"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="unsetCustomSplashScreenButtonPressed:" target="665" id="Iwu-Xq-TU6"/>
+                                    </connections>
+                                </button>
                                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" tag="666" id="OpR-OS-jFn">
-                                    <rect key="frame" x="15" y="16" width="138" height="70"/>
+                                    <rect key="frame" x="15" y="84" width="197" height="42"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Icon file is mandatory due to an issue with Unity: it copies the icon in the bundle after post-process." id="jA0-R0-TpO">
+                                        <font key="font" metaFont="smallSystem"/>
+                                        <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
+                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" tag="666" id="Xzx-s9-VzA">
+                                    <rect key="frame" x="15" y="9" width="197" height="42"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Optional. Due to an issue with Unity, you have to provide your splash screen in .tif format." id="p4p-g5-gFy">
                                         <font key="font" metaFont="smallSystem"/>
                                         <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -814,21 +826,12 @@
                         <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </box>
                     <box autoresizesSubviews="NO" title="Packaging" borderType="line" id="778">
-                        <rect key="frame" x="499" y="118" width="411" height="102"/>
+                        <rect key="frame" x="499" y="125" width="411" height="83"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <view key="contentView">
-                            <rect key="frame" x="1" y="1" width="409" height="86"/>
+                            <rect key="frame" x="1" y="1" width="409" height="67"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
-                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" tag="666" id="779">
-                                    <rect key="frame" x="15" y="61" width="466" height="17"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Application needs to be packaged for Mac App Store distribution." id="780">
-                                        <font key="font" size="10" name="LucidaGrande"/>
-                                        <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
-                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                    </textFieldCell>
-                                </textField>
                                 <button id="781">
                                     <rect key="frame" x="16" y="41" width="304" height="18"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -880,12 +883,12 @@
                         </connections>
                     </button>
                     <imageView id="647">
-                        <rect key="frame" x="528" y="74" width="40" height="40"/>
+                        <rect key="frame" x="528" y="81" width="40" height="40"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="grey-line-icon" id="648"/>
                     </imageView>
                     <textField verticalHuggingPriority="750" id="649">
-                        <rect key="frame" x="496" y="51" width="104" height="17"/>
+                        <rect key="frame" x="496" y="58" width="104" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Code Sign" id="650">
                             <font key="font" metaFont="system"/>
@@ -894,12 +897,12 @@
                         </textFieldCell>
                     </textField>
                     <imageView id="651">
-                        <rect key="frame" x="632" y="74" width="40" height="40"/>
+                        <rect key="frame" x="632" y="81" width="40" height="40"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="grey-line-icon" id="654"/>
                     </imageView>
                     <textField verticalHuggingPriority="750" id="652">
-                        <rect key="frame" x="600" y="51" width="104" height="17"/>
+                        <rect key="frame" x="600" y="58" width="104" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Entitlements" id="653">
                             <font key="font" metaFont="system"/>
@@ -908,17 +911,17 @@
                         </textFieldCell>
                     </textField>
                     <imageView id="655">
-                        <rect key="frame" x="736" y="74" width="40" height="40"/>
+                        <rect key="frame" x="736" y="81" width="40" height="40"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="grey-line-icon" id="658"/>
                     </imageView>
                     <imageView id="788">
-                        <rect key="frame" x="840" y="74" width="40" height="40"/>
+                        <rect key="frame" x="840" y="81" width="40" height="40"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="grey-line-icon" id="789"/>
                     </imageView>
                     <textField verticalHuggingPriority="750" id="656">
-                        <rect key="frame" x="704" y="51" width="104" height="17"/>
+                        <rect key="frame" x="704" y="58" width="104" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Sandboxing" id="657">
                             <font key="font" metaFont="system"/>
@@ -927,7 +930,7 @@
                         </textFieldCell>
                     </textField>
                     <textField verticalHuggingPriority="750" id="790">
-                        <rect key="frame" x="808" y="51" width="104" height="17"/>
+                        <rect key="frame" x="808" y="58" width="104" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Packaging" id="791">
                             <font key="font" metaFont="system"/>
@@ -955,6 +958,7 @@
                 <outlet property="codeSignCheckbox" destination="536" id="692"/>
                 <outlet property="codeSignIconImageView" destination="647" id="673"/>
                 <outlet property="customIconImageWell" destination="818" id="830"/>
+                <outlet property="customSplashScreenImageWell" destination="h4M-UI-d3p" id="1ab-9m-KI9"/>
                 <outlet property="entitlementApsPopUpButton" destination="940" id="946"/>
                 <outlet property="entitlementsApplicationIdentifierTextField" destination="2Kd-qR-vLq" id="F2m-ap-wMp"/>
                 <outlet property="entitlementsBox" destination="555" id="758"/>
@@ -989,7 +993,9 @@
                 <outlet property="sbMusicFolderAccessPopUpButton" destination="612" id="713"/>
                 <outlet property="sbPicturesFolderAccesPopUpButton" destination="628" id="715"/>
                 <outlet property="setCustomIconButton" destination="820" id="831"/>
+                <outlet property="setCustomSplashScreenButton" destination="xfZ-IR-j6O" id="kKp-UH-y0X"/>
                 <outlet property="unsetCustomIconButton" destination="824" id="832"/>
+                <outlet property="unsetCustomSplashScreenButton" destination="Ff3-Ah-CKT" id="mox-AT-iZD"/>
                 <outlet property="updateBuildPipelineButton" destination="643" id="670"/>
                 <outlet property="versionNumberTextField" destination="804" id="810"/>
             </connections>

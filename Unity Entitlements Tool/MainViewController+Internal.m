@@ -186,6 +186,17 @@
                     }
                 }
                 
+                // Attempt to retrieve custom splash screen
+                NSRegularExpression *customSplashScreenRegex = [NSRegularExpression regularExpressionWithPattern:@"system\\(\\\"cp \\\\\\\".*?\\\\\\\" \\\\\\\"\\$EntitlementsPublishFile\\/Contents\\/Resources\\/ScreenSelector\\.tif\\\\\\\"\\\"\\);" options:0 error:nil];
+                NSRange customSplashScreenBeginRange = [customSplashScreenRegex rangeOfFirstMatchInString:scriptString options:0 range:NSMakeRange(0, scriptString.length)];
+                if (customSplashScreenBeginRange.location != NSNotFound) {
+                    NSString *scriptSubstring = [scriptString substringFromIndex:(customSplashScreenBeginRange.location + 13)];
+                    NSRange customSplashScreenEndRange = [scriptSubstring rangeOfString:@"\\\""];
+                    if (customSplashScreenEndRange.location != NSNotFound) {
+                        customSplashScreenPath = [scriptSubstring substringToIndex:customSplashScreenEndRange.location];
+                    }
+                }
+                
                 // Attempt to retrieve certificate signature
                 NSRange codeSignBeginRange = [scriptString rangeOfString:@"/usr/bin/codesign --force --timestamp=none --sign \\\""];
                 if (codeSignBeginRange.location != NSNotFound) {
@@ -572,6 +583,10 @@
     if (customIconPath != nil)
         [self.customIconImageWell setImage:[[NSImage alloc] initWithContentsOfFile:customIconPath]];
     
+    // Set custom splash screen
+    if (customSplashScreenPath != nil)
+        [self.customSplashScreenImageWell setImage:[[NSImage alloc] initWithContentsOfFile:customSplashScreenPath]];
+    
     // Do we have some provisioning profile loaded ?
     BOOL didFindValidProfile = NO;
     BOOL didFindInvalidProfile = NO;
@@ -841,6 +856,9 @@
     [self.customIconImageWell setEnabled:YES];
     [self.setCustomIconButton setEnabled:YES];
     [self.unsetCustomIconButton setEnabled:YES];
+    [self.customSplashScreenImageWell setEnabled:YES];
+    [self.setCustomSplashScreenButton setEnabled:YES];
+    [self.unsetCustomSplashScreenButton setEnabled:YES];
     
     // No IBOutletCollection ? No problem...
     for (id view in self.codeSignBox.recursiveSubviews)
@@ -866,6 +884,9 @@
     [self.customIconImageWell setEnabled:NO];
     [self.setCustomIconButton setEnabled:NO];
     [self.unsetCustomIconButton setEnabled:NO];
+    [self.customSplashScreenImageWell setEnabled:NO];
+    [self.setCustomSplashScreenButton setEnabled:NO];
+    [self.unsetCustomSplashScreenButton setEnabled:NO];
    
     // Grey out all labels
     // No IBOutletCollection ? No problem...
@@ -1043,6 +1064,10 @@
         // Copy custom icon
         if ((customIconPath != nil) && ! [customIconPath isEqualToString:@""])
             [perlOperationString appendFormat:@"\n    system(\"cp \\\"%@\\\" \\\"$EntitlementsPublishFile/Contents/Resources/UnityPlayer.icns\\\"\");", customIconPath];
+        
+        // Copy custom splash screen
+        if ((customSplashScreenPath != nil) && ! [customSplashScreenPath isEqualToString:@""])
+            [perlOperationString appendFormat:@"\n    system(\"cp \\\"%@\\\" \\\"$EntitlementsPublishFile/Contents/Resources/ScreenSelector.tif\\\"\");", customSplashScreenPath];
 
         // set owner & group
         [perlOperationString appendFormat:@"\n    system(\"/usr/sbin/chown -RH \\\"%@:staff\\\" \\\"$EntitlementsPublishFile\\\"\");", NSUserName()];

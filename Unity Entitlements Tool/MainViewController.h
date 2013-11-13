@@ -42,6 +42,7 @@
     NSString *versionNumber;
     NSString *bundleGetInfo;
     NSString *customIconPath;
+    NSString *customSplashScreenPath;
     NSString *provisioningCertificate;
     NSString *provisioningProfilePath;
     NSString *packagingCertificate;
@@ -91,6 +92,8 @@
 @property (weak) IBOutlet NSPopUpButton *macAppStoreCategoryPopUpButton;
 @property (weak) IBOutlet NSButton *setCustomIconButton;
 @property (weak) IBOutlet NSButton *unsetCustomIconButton;
+@property (weak) IBOutlet NSButton *setCustomSplashScreenButton;
+@property (weak) IBOutlet NSButton *unsetCustomSplashScreenButton;
 
 // Checkboxes
 @property (weak) IBOutlet NSButton *codeSignCheckbox;
@@ -102,6 +105,7 @@
 
 // Image wells
 @property (weak) IBOutlet NSImageView *customIconImageWell;
+@property (weak) IBOutlet NSImageView *customSplashScreenImageWell;
 
 
 // Actions
@@ -115,6 +119,9 @@
 - (IBAction)setCustomIconButtonPressed:(id)sender;
 - (IBAction)unsetCustomIconButtonPressed:(id)sender;
 - (IBAction)customIconWellAction:(id)sender;
+- (IBAction)customSplashScreenWellAction:(id)sender;
+- (IBAction)setCustomSplashScreenButtonPressed:(id)sender;
+- (IBAction)unsetCustomSplashScreenButtonPressed:(id)sender;
 
 
 ////////////////////////
