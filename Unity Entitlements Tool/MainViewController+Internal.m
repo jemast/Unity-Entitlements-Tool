@@ -1069,6 +1069,9 @@
         if ((customSplashScreenPath != nil) && ! [customSplashScreenPath isEqualToString:@""])
             [perlOperationString appendFormat:@"\n    system(\"cp \\\"%@\\\" \\\"$EntitlementsPublishFile/Contents/Resources/ScreenSelector.tif\\\"\");", customSplashScreenPath];
 
+        // Remove unwanted meta files
+        [perlOperationString appendString:@"\n    system(\"find \\\"$jEntitlementsPublishFile\\\" -name \\*.meta -exec rm -r \\\"{{}}\\\" \\\\;\");"];
+
         // set owner & group
         [perlOperationString appendFormat:@"\n    system(\"/usr/sbin/chown -RH \\\"%@:staff\\\" \\\"$EntitlementsPublishFile\\\"\");", NSUserName()];
         
