@@ -1,5 +1,5 @@
 /********************************************************************************
- Copyright (c) 2011-2013, jemast software
+ Copyright (c) 2011-2014, jemast software
  All rights reserved.
  
  Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@
 
 @synthesize codeSignBox, provisioningProfileAppIdLabel, provisioningProfilePopUpButton, provisioningProfileCertificatePopUpButton, codeSignCheckbox, bundleIdentifierTextField, macAppStoreCategoryPopUpButton, versionNumberTextField, bundleGetInfoTextField, setCustomIconButton, unsetCustomIconButton, customIconImageWell;
 
-@synthesize entitlementsBox, entitlementsCheckbox, entitlementsApplicationIdentifierTextField, iCloudContainerTextField, iCloudKeyValueStoreTextField, entitlementsGameCenterCheckbox, entitlementApsPopUpButton;
+@synthesize entitlementsBox, entitlementsCheckbox, entitlementsApplicationIdentifierTextField, iCloudContainerTextField, iCloudKeyValueStoreTextField, entitlementApsPopUpButton;
 
 @synthesize sandboxingBox, sandboxingCheckbox, sbAllowIncomingNetworkConnectionsCheckbox, sbAllowOutgoingNetworkConnectionsCheckbox, sbAllowCameraAccessCheckbox, sbAllowMicrophoneAccessCheckbox, sbAllowUSBAccessCheckbox, sbAllowPrintingCheckbox, sbAllowAddressBookDataAccessCheckbox, sbAllowLocationServicesAccessCheckbox, sbAllowCalendarDataAccessCheckbox, sbFileSystemAccessPopUpButton, sbMusicFolderAccessPopUpButton, sbMoviesFolderAccessPopUpButton, sbPicturesFolderAccesPopUpButton, sbDownloadsFolderAccessPopUpButton;
 
@@ -406,17 +406,6 @@
         [entitlements removeObjectForKey:@"com.apple.developer.ubiquity-container-identifiers"];
     } else {
         [entitlements setObject:[NSArray arrayWithObject:[sender stringValue]] forKey:@"com.apple.developer.ubiquity-container-identifiers"];
-    }
-}
-
-- (IBAction)entitlementsOptionCheckboxPressed:(id)sender {
-    // Just pass any checkbox change to our entitlements dictionary
-    
-    if (sender == self.entitlementsGameCenterCheckbox) {
-        if (self.entitlementsGameCenterCheckbox.state)
-            [entitlements setObject:[NSNumber numberWithBool:YES] forKey:@"com.apple.developer.game-center"];
-        else
-            [entitlements removeObjectForKey:@"com.apple.developer.game-center"];
     }
 }
 

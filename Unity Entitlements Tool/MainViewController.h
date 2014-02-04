@@ -1,5 +1,5 @@
 /********************************************************************************
- Copyright (c) 2011-2013, jemast software
+ Copyright (c) 2011-2014, jemast software
  All rights reserved.
  
  Redistribution and use in source and binary forms, with or without
@@ -132,7 +132,6 @@
 
 // Checkboxes
 @property (weak) IBOutlet NSButton *entitlementsCheckbox;
-@property (weak) IBOutlet NSButton *entitlementsGameCenterCheckbox;
 
 // Text fields
 @property (weak) IBOutlet NSTextField *entitlementsApplicationIdentifierTextField;
@@ -147,7 +146,6 @@
 - (IBAction)entitlementsApplicationIdentifierTextFieldEdited:(id)sender;
 - (IBAction)iCloudKeyValueStoreTextFieldEdited:(id)sender;
 - (IBAction)iCloudContainerTextFieldEdited:(id)sender;
-- (IBAction)entitlementsOptionCheckboxPressed:(id)sender;
 - (IBAction)entitlementsApsEnvironmentPicked:(id)sender;
 
 

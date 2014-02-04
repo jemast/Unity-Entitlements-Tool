@@ -1,5 +1,5 @@
 /********************************************************************************
- Copyright (c) 2011-2013, jemast software
+ Copyright (c) 2011-2014, jemast software
  All rights reserved.
  
  Redistribution and use in source and binary forms, with or without
@@ -698,8 +698,6 @@
     if ([[entitlements objectForKey:@"com.apple.developer.ubiquity-container-identifiers"] isKindOfClass:[NSArray class]])
         [self.iCloudContainerTextField setStringValue:[[entitlements objectForKey:@"com.apple.developer.ubiquity-container-identifiers"] objectAtIndex:0]];
     
-    [self.entitlementsGameCenterCheckbox setState:(([[entitlements objectForKey:@"com.apple.developer.game-center"] boolValue] == YES) ? NSOnState : NSOffState)];
-    
     if ([[entitlements objectForKey:@"com.apple.developer.aps-environment"] isEqualToString:@"production"])
         [self.entitlementApsPopUpButton selectItemAtIndex:2];
     else if ([[entitlements objectForKey:@"com.apple.developer.aps-environment"] isEqualToString:@"development"])
@@ -822,7 +820,6 @@
     [self.entitlementsApplicationIdentifierTextField setStringValue:@""];
     [self.iCloudKeyValueStoreTextField setStringValue:@""];
     [self.iCloudContainerTextField setStringValue:@""];
-    [self.entitlementsGameCenterCheckbox setState:NSOffState];
     [self.entitlementApsPopUpButton selectItemAtIndex:0];
     
     [self.sandboxingCheckbox setState:NSOffState];
@@ -905,7 +902,6 @@
     [self.entitlementsApplicationIdentifierTextField setEnabled:YES];
     [self.iCloudKeyValueStoreTextField setEnabled:YES];
     [self.iCloudContainerTextField setEnabled:YES];
-    [self.entitlementsGameCenterCheckbox setEnabled:YES];
     [self.entitlementApsPopUpButton setEnabled:YES];
     
     // Dark out all labels
@@ -925,7 +921,6 @@
     [self.entitlementsApplicationIdentifierTextField setEnabled:NO];
     [self.iCloudKeyValueStoreTextField setEnabled:NO];
     [self.iCloudContainerTextField setEnabled:NO];
-    [self.entitlementsGameCenterCheckbox setEnabled:NO];
     [self.entitlementApsPopUpButton setEnabled:NO];
     
     // Grey out all labels
