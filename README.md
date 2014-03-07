@@ -19,6 +19,6 @@ Authors
 License
 -------
 
-Copyright 2011-2013, jemast software.
+Copyright 2011-2014, jemast software.
 
 Licensed under the BSD License (new-BSD).

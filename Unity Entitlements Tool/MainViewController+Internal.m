@@ -692,6 +692,8 @@
     if ([entitlements objectForKey:@"com.apple.application-identifier"])
         [self.entitlementsApplicationIdentifierTextField setStringValue:[entitlements objectForKey:@"com.apple.application-identifier"]];
 
+    [self.gameCenterCheckbox setState:(([[entitlements objectForKey:@"com.apple.developer.game-center"] boolValue] == YES) ? NSOnState : NSOffState)];
+
     if ([entitlements objectForKey:@"com.apple.developer.ubiquity-kvstore-identifier"])
         [self.iCloudKeyValueStoreTextField setStringValue:[entitlements objectForKey:@"com.apple.developer.ubiquity-kvstore-identifier"]];
     
@@ -820,6 +822,7 @@
     [self.entitlementsApplicationIdentifierTextField setStringValue:@""];
     [self.iCloudKeyValueStoreTextField setStringValue:@""];
     [self.iCloudContainerTextField setStringValue:@""];
+    [self.gameCenterCheckbox setState:NSOffState];
     [self.entitlementApsPopUpButton selectItemAtIndex:0];
     
     [self.sandboxingCheckbox setState:NSOffState];
@@ -902,6 +905,7 @@
     [self.entitlementsApplicationIdentifierTextField setEnabled:YES];
     [self.iCloudKeyValueStoreTextField setEnabled:YES];
     [self.iCloudContainerTextField setEnabled:YES];
+    [self.gameCenterCheckbox setEnabled:YES];
     [self.entitlementApsPopUpButton setEnabled:YES];
     
     // Dark out all labels
@@ -921,6 +925,7 @@
     [self.entitlementsApplicationIdentifierTextField setEnabled:NO];
     [self.iCloudKeyValueStoreTextField setEnabled:NO];
     [self.iCloudContainerTextField setEnabled:NO];
+    [self.gameCenterCheckbox setEnabled:NO];
     [self.entitlementApsPopUpButton setEnabled:NO];
     
     // Grey out all labels

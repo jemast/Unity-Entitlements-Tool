@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="4511" systemVersion="13B42" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="4511" systemVersion="13C64" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment defaultVersion="1070" identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="4511"/>
@@ -475,10 +475,19 @@
                                     </textFieldCell>
                                 </textField>
                                 <textField verticalHuggingPriority="750" tag="666" id="938">
-                                    <rect key="frame" x="15" y="16" width="139" height="17"/>
+                                    <rect key="frame" x="15" y="16" width="113" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Push Notifications" id="939">
                                         <font key="font" metaFont="cellTitle"/>
+                                        <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
+                                <textField verticalHuggingPriority="750" tag="666" id="Sxp-Qc-bAY">
+                                    <rect key="frame" x="267" y="19" width="113" height="17"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Game Center" id="RP1-LC-FBy">
+                                        <font key="font" metaFont="titleBar" size="12"/>
                                         <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
@@ -529,7 +538,7 @@
                                     </connections>
                                 </textField>
                                 <popUpButton verticalHuggingPriority="750" id="940">
-                                    <rect key="frame" x="157" y="11" width="307" height="26"/>
+                                    <rect key="frame" x="132" y="11" width="125" height="26"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" enabled="NO" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="941">
                                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -546,6 +555,26 @@
                                         <action selector="entitlementsApsEnvironmentPicked:" target="665" id="948"/>
                                     </connections>
                                 </popUpButton>
+                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" tag="666" id="OpJ-38-dJu">
+                                    <rect key="frame" x="267" y="5" width="197" height="14"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Use only for Mac App Store release." id="pFA-4a-S16">
+                                        <font key="font" metaFont="smallSystem"/>
+                                        <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
+                                <button id="Bvd-HX-O3P">
+                                    <rect key="frame" x="354" y="18" width="22" height="18"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" enabled="NO" inset="2" id="CqQ-9m-mva">
+                                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="entitlementsOptionCheckboxPressed:" target="665" id="44X-ir-Umg"/>
+                                    </connections>
+                                </button>
                             </subviews>
                         </view>
                         <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
@@ -953,6 +982,7 @@
                 <outlet property="entitlementsBox" destination="555" id="758"/>
                 <outlet property="entitlementsCheckbox" destination="538" id="696"/>
                 <outlet property="entitlementsIconImageView" destination="651" id="674"/>
+                <outlet property="gameCenterCheckbox" destination="Bvd-HX-O3P" id="e9o-Y7-cjQ"/>
                 <outlet property="iCloudContainerTextField" destination="564" id="710"/>
                 <outlet property="iCloudKeyValueStoreTextField" destination="560" id="711"/>
                 <outlet property="installerCertificatePopUpButton" destination="896" id="905"/>

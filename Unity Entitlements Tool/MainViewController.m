@@ -40,7 +40,7 @@
 
 @synthesize codeSignBox, provisioningProfileAppIdLabel, provisioningProfilePopUpButton, provisioningProfileCertificatePopUpButton, codeSignCheckbox, bundleIdentifierTextField, macAppStoreCategoryPopUpButton, versionNumberTextField, bundleGetInfoTextField, setCustomIconButton, unsetCustomIconButton, customIconImageWell;
 
-@synthesize entitlementsBox, entitlementsCheckbox, entitlementsApplicationIdentifierTextField, iCloudContainerTextField, iCloudKeyValueStoreTextField, entitlementApsPopUpButton;
+@synthesize entitlementsBox, entitlementsCheckbox, entitlementsApplicationIdentifierTextField, iCloudContainerTextField, iCloudKeyValueStoreTextField, gameCenterCheckbox, entitlementApsPopUpButton;
 
 @synthesize sandboxingBox, sandboxingCheckbox, sbAllowIncomingNetworkConnectionsCheckbox, sbAllowOutgoingNetworkConnectionsCheckbox, sbAllowCameraAccessCheckbox, sbAllowMicrophoneAccessCheckbox, sbAllowUSBAccessCheckbox, sbAllowPrintingCheckbox, sbAllowAddressBookDataAccessCheckbox, sbAllowLocationServicesAccessCheckbox, sbAllowCalendarDataAccessCheckbox, sbFileSystemAccessPopUpButton, sbMusicFolderAccessPopUpButton, sbMoviesFolderAccessPopUpButton, sbPicturesFolderAccesPopUpButton, sbDownloadsFolderAccessPopUpButton;
 
@@ -426,6 +426,16 @@
             
         default:
             break;
+    }
+}
+
+- (IBAction)entitlementsOptionCheckboxPressed:(id)sender {
+    // Just pass any checkbox change to our entitlements dictionary
+    if (sender == self.gameCenterCheckbox) {
+        if (self.gameCenterCheckbox.state)
+            [entitlements setObject:[NSNumber numberWithBool:YES] forKey:@"com.apple.developer.game-center"];
+        else
+            [entitlements removeObjectForKey:@"com.apple.developer.game-center"];
     }
 }
 
