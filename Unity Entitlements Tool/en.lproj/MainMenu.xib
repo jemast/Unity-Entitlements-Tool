@@ -487,7 +487,7 @@
                                     <rect key="frame" x="267" y="19" width="113" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Game Center" id="RP1-LC-FBy">
-                                        <font key="font" metaFont="titleBar" size="12"/>
+                                        <font key="font" metaFont="cellTitle"/>
                                         <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
@@ -558,7 +558,7 @@
                                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" tag="666" id="OpJ-38-dJu">
                                     <rect key="frame" x="267" y="5" width="197" height="14"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Use only for Mac App Store release." id="pFA-4a-S16">
+                                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Enable sandboxing &amp; outgoing net." id="pFA-4a-S16">
                                         <font key="font" metaFont="smallSystem"/>
                                         <color key="textColor" name="disabledControlTextColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
